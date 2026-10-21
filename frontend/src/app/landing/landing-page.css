@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+.phone-shell {
+  box-shadow:
+    0 0 0 1px rgba(242, 245, 243, 0.06),
+    0 28px 60px rgba(0, 0, 0, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host :is(.animate-rise, .animate-rise-delay, .animate-rise-late, .animate-drift) {
+    animation: none !important;
+  }
+}

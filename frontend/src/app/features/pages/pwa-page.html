@@ -1,0 +1,46 @@
+<article>
+  <p class="text-sm font-medium text-ink-mute">
+    <a routerLink="/features/overview" class="hover:text-ink">Produit</a>
+    <span class="mx-2 text-ash-line">/</span>
+    App mobile
+  </p>
+  <h1 class="mt-3 font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
+    Sur l’écran d’accueil, sans App Store
+  </h1>
+  <p class="mt-4 text-lg leading-relaxed text-ink-mute">
+    ShakeUp côté élève est une PWA : vous ouvrez le lien envoyé par votre coach, vous vous
+    connectez, vous ajoutez l’icône à l’écran d’accueil. Pas de file d’attente sur les stores.
+  </p>
+
+  <div
+    class="mt-10 aspect-[16/9] border border-dashed border-ash-line bg-ash/40"
+    role="img"
+    aria-label="Emplacement capture installation PWA"
+  >
+    <p class="flex h-full items-center justify-center text-sm text-ink-mute">
+      Capture installation — à venir
+    </p>
+  </div>
+
+  <h2 class="mt-12 font-display text-xl font-bold">Pourquoi ça compte</h2>
+  <ul class="mt-4 list-disc space-y-2 pl-5 text-ink-mute">
+    <li>Accès immédiat après invitation coach.</li>
+    <li>Même expérience web / téléphone, un seul front élève à maintenir.</li>
+    <li>Service worker Angular pour le socle installable (build production).</li>
+  </ul>
+
+  <h2 class="mt-10 font-display text-xl font-bold">Architecture exposée</h2>
+  <p class="mt-3 leading-relaxed text-ink-mute">
+    Quatre briques : landing + PWA élève, back-office coach, API Spring, Postgres. Domaines séparés
+    en prod (vitrine, app, pro, api) — le même découpage qu’en local (:4200 / :4300 / :8080).
+  </p>
+
+  <p class="mt-10">
+    <a
+      routerLink="/features/nutrition"
+      class="font-display text-sm font-bold text-ink-mute underline-offset-2 hover:text-ink hover:underline"
+    >
+      ← Nutrition
+    </a>
+  </p>
+</article>

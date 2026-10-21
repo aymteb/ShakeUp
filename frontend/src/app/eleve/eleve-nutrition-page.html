@@ -1,0 +1,112 @@
+<main class="page">
+  <a routerLink="/eleve">← Accueil</a>
+  <h1>Nutrition</h1>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  <section class="consignes">
+    <h2>Consignes du jour</h2>
+    @if (target(); as t) {
+      <p><strong>{{ t.caloriesKcal }} kcal</strong></p>
+      <p>
+        @if (t.proteinG != null) {
+          <span>P {{ t.proteinG }}g</span>
+        }
+        @if (t.carbsG != null) {
+          <span> · G {{ t.carbsG }}g</span>
+        }
+        @if (t.fatG != null) {
+          <span> · L {{ t.fatG }}g</span>
+        }
+      </p>
+      @if (t.coachNote) {
+        <p class="note">{{ t.coachNote }}</p>
+      }
+      @if (remainingKcal() != null) {
+        <p>Restant : {{ remainingKcal() }} kcal</p>
+      }
+    } @else {
+      <p class="muted">Pas encore de consignes du coach.</p>
+    }
+  </section>
+
+  @if (diary(); as d) {
+    <section>
+      <h2>Totaux</h2>
+      <p>
+        {{ d.totalKcal }} kcal — P {{ d.totalProteinG }} / G {{ d.totalCarbsG }} / L
+        {{ d.totalFatG }}
+      </p>
+      @if (target(); as t) {
+        <div class="gauges">
+          <div>Calories {{ d.totalKcal }} / {{ t.caloriesKcal }}</div>
+          @if (t.proteinG != null) {
+            <div>Protéines {{ d.totalProteinG }} / {{ t.proteinG }}</div>
+          }
+          @if (t.carbsG != null) {
+            <div>Glucides {{ d.totalCarbsG }} / {{ t.carbsG }}</div>
+          }
+          @if (t.fatG != null) {
+            <div>Lipides {{ d.totalFatG }} / {{ t.fatG }}</div>
+          }
+        </div>
+      }
+    </section>
+  }
+
+  <section>
+    <h2>Ajouter un aliment</h2>
+    <form class="grid" [formGroup]="form" (ngSubmit)="add()">
+      <label>
+        Moment
+        <select formControlName="mealSlot">
+          <option value="BREAKFAST">Petit-déjeuner</option>
+          <option value="LUNCH">Déjeuner</option>
+          <option value="DINNER">Dîner</option>
+          <option value="SNACK">Collation</option>
+        </select>
+      </label>
+      <label>
+        Aliment
+        <select formControlName="foodId">
+          @for (f of foods(); track f.id) {
+            <option [value]="f.id">{{ f.name }}</option>
+          }
+        </select>
+      </label>
+      <label>Grammes <input type="number" formControlName="grams" /></label>
+      <button type="submit">Ajouter</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Journal</h2>
+    <ul>
+      @for (e of diary()?.entries || []; track e.id) {
+        <li>
+          {{ e.mealSlot }} — {{ e.foodName }} {{ e.grams }}g ({{ e.kcal }} kcal)
+          <button type="button" class="ghost" (click)="remove(e.id)">Retirer</button>
+        </li>
+      } @empty {
+        <li class="muted">Rien pour aujourd’hui.</li>
+      }
+    </ul>
+  </section>
+
+  <section>
+    <h2>Retours coach</h2>
+    <ul>
+      @for (m of feedback(); track m.id) {
+        <li><strong>{{ m.authorName }}</strong> : {{ m.body }}</li>
+      } @empty {
+        <li class="muted">Pas encore de retour.</li>
+      }
+    </ul>
+    <form class="grid" [formGroup]="feedbackForm" (ngSubmit)="sendFeedback()">
+      <label>Message <input formControlName="body" /></label>
+      <button type="submit">Envoyer</button>
+    </form>
+  </section>
+</main>

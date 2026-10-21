@@ -1,0 +1,131 @@
+<div class="relative min-h-dvh overflow-hidden bg-ink text-paper">
+  <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+    <div
+      class="absolute -left-[20%] top-[-10%] h-[70vmax] w-[70vmax] animate-drift rounded-full bg-[radial-gradient(circle_at_center,rgba(184,240,0,0.22),transparent_62%)]"
+    ></div>
+    <div
+      class="absolute bottom-[-20%] right-[-15%] h-[55vmax] w-[55vmax] animate-drift rounded-full bg-[radial-gradient(circle_at_center,rgba(61,74,70,0.55),transparent_65%)] [animation-delay:-6s]"
+    ></div>
+    <div
+      class="absolute inset-0 opacity-[0.07] [background-image:linear-gradient(rgba(242,245,243,0.35)_1px,transparent_1px),linear-gradient(90deg,rgba(242,245,243,0.35)_1px,transparent_1px)] [background-size:48px_48px]"
+    ></div>
+  </div>
+
+  <header class="relative z-10 flex items-center justify-between gap-4 px-6 py-5 sm:px-10 lg:px-14">
+    <p class="font-display text-xl font-extrabold tracking-tight text-volt sm:text-2xl">ShakeUp</p>
+    <div class="flex items-center gap-3 sm:gap-6">
+      <span class="text-xs font-medium text-paper/40 sm:text-sm">Vous êtes coach ?</span>
+      <a
+        routerLink="/login"
+        class="text-sm font-medium text-paper/70 transition hover:text-volt"
+      >
+        Connexion
+      </a>
+    </div>
+  </header>
+
+  <main
+    class="relative z-10 mx-auto grid min-h-[calc(100dvh-5rem)] max-w-7xl items-center gap-12 px-6 pb-16 pt-10 sm:px-10 lg:grid-cols-2 lg:gap-8 lg:px-14 lg:pb-12 lg:pt-4"
+  >
+    <div class="flex flex-col justify-center lg:min-h-[70vh]">
+      <h1
+        class="animate-rise font-display text-[clamp(2.75rem,5.2vw,4.25rem)] font-extrabold leading-[0.9] tracking-[-0.04em] text-paper"
+      >
+        De la salle<br />à&nbsp;l’assiette.
+      </h1>
+      <p
+        class="animate-rise-delay mt-5 max-w-[34rem] text-base leading-relaxed text-paper/70 sm:text-lg"
+      >
+        Programmes de musculation sur-mesure, journal nutritionnel précis. Concentrez-vous sur
+        l’effort, votre coach gère le reste.
+      </p>
+      <div class="animate-rise-late mt-9 flex flex-wrap items-center gap-3 sm:gap-4">
+        <a
+          routerLink="/login"
+          class="inline-flex items-center gap-2 bg-volt px-6 py-3.5 font-display text-sm font-bold tracking-wide text-ink transition hover:bg-white"
+        >
+          Connexion élève
+          <span aria-hidden="true" class="translate-y-px">→</span>
+        </a>
+        <a
+          routerLink="/features"
+          class="inline-flex items-center border border-paper/25 px-6 py-3.5 font-display text-sm font-bold tracking-wide text-paper transition hover:border-volt hover:text-volt"
+        >
+          Découvrir l’application
+        </a>
+      </div>
+      <p class="animate-rise-late mt-6 text-sm text-paper/45">
+        S’installe en 1 clic sur smartphone · Accès sécurisé
+      </p>
+    </div>
+
+    <div
+      id="demo"
+      class="animate-rise-late relative flex scroll-mt-24 items-center justify-center pb-4 lg:justify-end lg:pb-0"
+    >
+      <div
+        class="pointer-events-none absolute -inset-8 rounded-full bg-[radial-gradient(circle_at_center,rgba(184,240,0,0.14),transparent_68%)]"
+        aria-hidden="true"
+      ></div>
+
+      <figure class="phone relative w-[min(100%,280px)] sm:w-[300px]" aria-label="Aperçu de l’app élève">
+        <div class="phone-shell relative overflow-hidden rounded-[2rem] border border-white/15 bg-ink-soft shadow-lift">
+          <div class="flex items-center justify-between px-5 pb-1 pt-3.5">
+            <span class="text-[10px] font-medium text-paper/50">9:41</span>
+            <span class="absolute left-1/2 top-2.5 h-5 w-20 -translate-x-1/2 rounded-full bg-ink"></span>
+            <span class="flex gap-1" aria-hidden="true">
+              <span class="block h-1.5 w-1.5 rounded-full bg-paper/40"></span>
+              <span class="block h-1.5 w-1.5 rounded-full bg-paper/40"></span>
+              <span class="block h-1.5 w-3 rounded-full bg-paper/55"></span>
+            </span>
+          </div>
+
+          <div class="px-5 pb-6 pt-4">
+            <p class="font-display text-lg font-extrabold tracking-tight text-volt">ShakeUp</p>
+            <p class="mt-0.5 text-xs text-paper/50">Bonjour Camille</p>
+
+            <p class="mt-6 font-display text-2xl font-bold tracking-tight">Aujourd’hui</p>
+            <p class="mt-1 text-xs leading-relaxed text-paper/55">
+              Séance A · consignes nutrition du coach
+            </p>
+
+            <div class="mt-5 space-y-2.5">
+              <div class="border border-volt/30 bg-ink/60 px-3.5 py-3">
+                <div class="flex items-baseline justify-between gap-2">
+                  <span class="font-display text-sm font-bold">Musculation</span>
+                  <span class="text-[10px] font-medium uppercase tracking-[0.12em] text-volt"
+                    >3 exos</span
+                  >
+                </div>
+                <p class="mt-1 text-[11px] text-paper/45">Squat · Soulevé · Gainage 45s</p>
+              </div>
+              <div class="border border-white/10 bg-ink/40 px-3.5 py-3">
+                <div class="flex items-baseline justify-between gap-2">
+                  <span class="font-display text-sm font-bold">Nutrition</span>
+                  <span class="text-[10px] font-medium uppercase tracking-[0.12em] text-paper/45"
+                    >2 450 kcal</span
+                  >
+                </div>
+                <div class="mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/10">
+                  <div class="h-full w-[68%] rounded-full bg-volt"></div>
+                </div>
+                <p class="mt-1.5 text-[11px] text-paper/45">1 670 / 2 450 kcal restantes</p>
+              </div>
+            </div>
+
+            <div class="mt-5 border-t border-white/10 pt-3">
+              <p class="text-[11px] leading-snug text-paper/50">
+                <span class="font-medium text-paper/75">Coach —</span> Belle série hier. Monte à
+                42,5 kg au développé aujourd’hui.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <figcaption class="mt-4 text-center text-xs text-paper/40">
+          Aperçu de votre app — séances, nutrition, retours coach
+        </figcaption>
+      </figure>
+    </div>
+  </main>
+</div>

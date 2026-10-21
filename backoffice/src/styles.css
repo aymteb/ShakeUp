@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #0b0f0e;
+  --ink-soft: #1a2220;
+  --ink-mute: #3d4a46;
+  --paper: #f2f5f3;
+  --paper-raised: #ffffff;
+  --volt: #b8f000;
+  --volt-dim: #8fbc00;
+  --ash: #e4ebe7;
+  --ash-line: #c5d0cb;
+  color-scheme: light;
+}
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply m-0 min-h-dvh bg-paper font-sans text-ink;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--volt) 55%, white);
+    color: var(--ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--volt-dim);
+    outline-offset: 3px;
+  }
+
+  input,
+  button,
+  select,
+  textarea {
+    font: inherit;
+  }
+}

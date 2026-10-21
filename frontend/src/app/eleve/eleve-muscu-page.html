@@ -1,0 +1,58 @@
+<main class="page">
+  <a routerLink="/eleve">← Accueil</a>
+  <h1>Musculation</h1>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+  @if (ok()) {
+    <p class="ok">{{ ok() }}</p>
+  }
+
+  @if (plan(); as p) {
+    <section>
+      <h2>{{ p.title }}</h2>
+      @if (p.notes) {
+        <p class="muted">{{ p.notes }}</p>
+      }
+      <ul class="plan-list">
+        @for (item of p.items; track item.id) {
+          <li>
+            <strong>{{ item.exerciseName }}</strong>
+            <span class="muted">{{ item.muscleGroup }}</span>
+            <span>{{ formatItem(item) }}</span>
+          </li>
+        }
+      </ul>
+    </section>
+  } @else {
+    <p class="muted">Aucun programme assigné pour le moment.</p>
+  }
+
+  <section>
+    <h2>Séance du jour</h2>
+    <form class="grid" [formGroup]="form" (ngSubmit)="saveLog()">
+      <label class="check">
+        <input type="checkbox" formControlName="done" />
+        Séance faite
+      </label>
+      <label>Commentaire <input formControlName="comment" /></label>
+      <button type="submit">Enregistrer</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Retours coach</h2>
+    <ul>
+      @for (m of feedback(); track m.id) {
+        <li><strong>{{ m.authorName }}</strong> : {{ m.body }}</li>
+      } @empty {
+        <li class="muted">Pas encore de retour.</li>
+      }
+    </ul>
+    <form class="grid" [formGroup]="feedbackForm" (ngSubmit)="sendFeedback()">
+      <label>Message <input formControlName="body" /></label>
+      <button type="submit">Envoyer</button>
+    </form>
+  </section>
+</main>

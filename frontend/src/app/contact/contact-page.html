@@ -1,0 +1,66 @@
+<div class="relative min-h-dvh bg-ink px-6 py-10 text-paper sm:px-10">
+  <div
+    class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(184,240,0,0.12),transparent_55%)]"
+    aria-hidden="true"
+  ></div>
+
+  <div class="relative mx-auto w-full max-w-lg">
+    <a routerLink="/" class="font-display text-xl font-extrabold tracking-tight text-volt">ShakeUp</a>
+
+    <h1 class="mt-10 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+      Je cherche un coach
+    </h1>
+    <p class="mt-3 text-paper/65">
+      Décrivez votre objectif. Un coach ShakeUp vous recontactera — vous n’avez rien à installer
+      pour l’instant.
+    </p>
+
+    @if (sent()) {
+      <p
+        class="mt-10 border border-volt/40 bg-[color-mix(in_srgb,var(--volt)_12%,transparent)] px-4 py-4 text-sm text-paper"
+        role="status"
+      >
+        Message envoyé. Vous serez recontacté·e bientôt.
+      </p>
+      <a routerLink="/" class="mt-6 inline-block text-sm text-volt hover:underline">Retour à l’accueil</a>
+    } @else {
+      <form class="mt-10 space-y-5" [formGroup]="form" (ngSubmit)="submit()">
+        <label class="block space-y-1.5">
+          <span class="text-sm font-medium">Prénom / nom</span>
+          <input
+            formControlName="name"
+            class="w-full border border-white/15 bg-ink-soft px-3.5 py-3 text-paper focus:border-volt focus:outline-none"
+          />
+        </label>
+        <label class="block space-y-1.5">
+          <span class="text-sm font-medium">Email</span>
+          <input
+            type="email"
+            formControlName="email"
+            class="w-full border border-white/15 bg-ink-soft px-3.5 py-3 text-paper focus:border-volt focus:outline-none"
+          />
+        </label>
+        <label class="block space-y-1.5">
+          <span class="text-sm font-medium">Votre message</span>
+          <textarea
+            formControlName="message"
+            rows="5"
+            class="w-full resize-y border border-white/15 bg-ink-soft px-3.5 py-3 text-paper focus:border-volt focus:outline-none"
+            placeholder="Objectif, niveau, disponibilité…"
+          ></textarea>
+        </label>
+
+        @if (error()) {
+          <p class="text-sm text-red-300" role="alert">{{ error() }}</p>
+        }
+
+        <button
+          type="submit"
+          class="w-full bg-volt px-4 py-3.5 font-display text-sm font-bold tracking-wide text-ink transition hover:bg-white"
+        >
+          Envoyer
+        </button>
+      </form>
+    }
+  </div>
+</div>

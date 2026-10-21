@@ -1,0 +1,53 @@
+<div class="flex min-h-dvh bg-paper text-ink">
+  <aside
+    class="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-ash-line bg-paper-raised md:flex"
+  >
+    <div class="border-b border-ash-line px-5 py-5">
+      <a routerLink="/" class="font-display text-lg font-extrabold tracking-tight text-ink">
+        ShakeUp
+      </a>
+      <p class="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-ink-mute">Produit</p>
+    </div>
+    <nav class="flex flex-1 flex-col gap-0.5 overflow-y-auto px-3 py-4 text-sm" aria-label="Rubriques">
+      @for (item of nav; track item.path) {
+        <a
+          [routerLink]="item.path"
+          routerLinkActive="bg-ink text-paper"
+          class="rounded-sm px-3 py-2.5 font-medium text-ink-mute transition hover:bg-ash/60 hover:text-ink"
+        >
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+    <div class="border-t border-ash-line px-5 py-4 text-sm">
+      <a routerLink="/login" class="font-medium text-ink underline-offset-2 hover:underline">
+        Connexion élève
+      </a>
+      <a routerLink="/" class="mt-2 block text-ink-mute hover:text-ink">← Accueil</a>
+    </div>
+  </aside>
+
+  <div class="flex min-w-0 flex-1 flex-col">
+    <header
+      class="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-ash-line bg-paper/90 px-4 py-3 backdrop-blur md:hidden"
+    >
+      <a routerLink="/" class="font-display text-base font-extrabold">ShakeUp</a>
+      <select
+        class="max-w-[60%] border border-ash-line bg-paper-raised px-2 py-1.5 text-sm"
+        [value]="''"
+        (change)="navSelect($event)"
+      >
+        <option disabled value="">Rubrique…</option>
+        @for (item of nav; track item.path) {
+          <option [value]="item.path">{{ item.label }}</option>
+        }
+      </select>
+    </header>
+
+    <main class="flex-1 px-5 py-10 sm:px-10 lg:px-14 lg:py-12">
+      <div class="mx-auto max-w-3xl">
+        <router-outlet />
+      </div>
+    </main>
+  </div>
+</div>

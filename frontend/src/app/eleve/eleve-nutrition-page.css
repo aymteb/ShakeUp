@@ -1,0 +1,82 @@
+.page {
+  max-width: 640px;
+  margin: 1.5rem auto;
+  padding: 0 1rem 3rem;
+  font-family: system-ui, sans-serif;
+}
+
+a {
+  color: #111;
+}
+
+section {
+  margin: 1.75rem 0;
+}
+
+.consignes {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.note {
+  font-style: italic;
+}
+
+.gauges {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.grid {
+  display: grid;
+  gap: 0.65rem;
+}
+
+label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
+input,
+select {
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+button {
+  padding: 0.5rem 0.85rem;
+  border: 0;
+  border-radius: 6px;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+  width: fit-content;
+}
+
+button.ghost {
+  background: transparent;
+  color: #111;
+  border: 1px solid #ccc;
+  margin-left: 0.5rem;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 0.5rem;
+}
+
+.muted {
+  color: #666;
+}
+
+.error {
+  color: #b00020;
+}

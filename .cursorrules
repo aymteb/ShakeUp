@@ -1,0 +1,10 @@
+# ShakeUp — règles de génération
+
+- Pas de commentaires évidents. Commenter uniquement une logique métier complexe, un cas limite ou un contournement non trivial.
+- Pas de sur-ingénierie. Code minimal, idiomatique, propre.
+- Pas de commentaires de métadonnées ou de chat (`// Ajouté comme demandé`, `// TODO` décoratif, etc.).
+- Nommage clair. Code concis et lisible.
+- Pas de try-catch redondants ni de null-checks inutiles quand le typage ou le flux le garantit.
+- Pas de Javadoc décorative ni de prose dans le code.
+- Surfaces séparées : landing ≠ login ≠ back-office coach ≠ app élève.
+- Catalogues exercices / aliments : APIs externes (Wger, OpenFoodFacts…) — pas de seed maison comme produit.

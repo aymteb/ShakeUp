@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: shakeup
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shakeup
+    username: shakeup
+    password: shakeup
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+server:
+  port: 8080
+
+shakeup:
+  jwt:
+    secret: shakeup-dev-secret-change-me-32chars-min
+    expiration-minutes: 720
