@@ -1,4 +1,5 @@
 export type ExerciseKind = 'LOAD' | 'HOLD';
+export type CatalogSource = 'SEED' | 'WGER' | 'OFF' | 'CUSTOM';
 
 export interface Exercise {
   id: number;
@@ -16,6 +17,10 @@ export interface Food {
   proteinPer100g: number;
   carbsPer100g: number;
   fatPer100g: number;
+  imageUrl?: string | null;
+  servingGrams?: number | null;
+  source?: CatalogSource;
+  externalId?: string | null;
 }
 
 export interface PlanItem {

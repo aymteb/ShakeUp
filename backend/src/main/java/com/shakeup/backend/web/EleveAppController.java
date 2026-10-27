@@ -1,5 +1,6 @@
 package com.shakeup.backend.web;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,15 +20,22 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.shakeup.backend.domain.FeedbackChannel;
+import com.shakeup.backend.domain.Role;
 import com.shakeup.backend.domain.UserAccount;
+import com.shakeup.backend.repository.UserAccountRepository;
 import com.shakeup.backend.service.CatalogService;
+import com.shakeup.backend.service.CoachingAccessService;
+import com.shakeup.backend.service.CoachingWeekService;
 import com.shakeup.backend.service.FeedbackService;
 import com.shakeup.backend.service.NutritionService;
+import com.shakeup.backend.service.OffSyncService;
 import com.shakeup.backend.service.PlanService;
 import com.shakeup.backend.service.WorkoutLogService;
+import com.shakeup.backend.web.dto.CoachingWeekResponse;
 import com.shakeup.backend.web.dto.DiaryDayResponse;
 import com.shakeup.backend.web.dto.DiaryEntryRequest;
 import com.shakeup.backend.web.dto.DiaryEntryResponse;
+import com.shakeup.backend.web.dto.EleveAccessStatusResponse;
 import com.shakeup.backend.web.dto.ExerciseResponse;
 import com.shakeup.backend.web.dto.FeedbackRequest;
 import com.shakeup.backend.web.dto.FeedbackResponse;
@@ -48,19 +56,53 @@ public class EleveAppController {
 	private final WorkoutLogService workoutLogService;
 	private final NutritionService nutritionService;
 	private final CatalogService catalogService;
+	private final OffSyncService offSyncService;
 	private final FeedbackService feedbackService;
+	private final CoachingAccessService coachingAccess;
+	private final CoachingWeekService coachingWeeks;
+	private final UserAccountRepository users;
+	private final Clock clock;
 
 	public EleveAppController(
 			PlanService planService,
 			WorkoutLogService workoutLogService,
 			NutritionService nutritionService,
 			CatalogService catalogService,
-			FeedbackService feedbackService) {
+			OffSyncService offSyncService,
+			FeedbackService feedbackService,
+			CoachingAccessService coachingAccess,
+			CoachingWeekService coachingWeeks,
+			UserAccountRepository users,
+			Clock clock) {
 		this.planService = planService;
 		this.workoutLogService = workoutLogService;
 		this.nutritionService = nutritionService;
 		this.catalogService = catalogService;
+		this.offSyncService = offSyncService;
 		this.feedbackService = feedbackService;
+		this.coachingAccess = coachingAccess;
+		this.coachingWeeks = coachingWeeks;
+		this.users = users;
+		this.clock = clock;
+	}
+
+	@GetMapping("/me")
+	public EleveAccessStatusResponse me(@AuthenticationPrincipal UserAccount eleve) {
+		UserAccount coach = users.findByRoleOrderByDisplayNameAsc(Role.COACH).stream()
+				.findFirst()
+				.orElse(null);
+		CoachingWeekResponse week = coachingWeeks.currentFor(eleve);
+		return new EleveAccessStatusResponse(
+				coachingAccess.isCoachingActive(eleve),
+				eleve.getCoachingStartsOn(),
+				eleve.getCoachingEndsOn(),
+				eleve.getDisplayName(),
+				coach != null ? coach.getEmail() : null,
+				coach != null ? coach.getDisplayName() : null,
+				LocalDate.now(clock),
+				week.isoYear(),
+				week.isoWeek(),
+				week.kind());
 	}
 
 	@GetMapping("/plan")
@@ -83,8 +125,17 @@ public class EleveAppController {
 	}
 
 	@GetMapping("/foods")
-	public List<FoodResponse> foods() {
+	public List<FoodResponse> foods(@RequestParam(required = false) String q) {
+		if (q != null && q.trim().length() >= 2) {
+			return offSyncService.searchAndImport(q.trim());
+		}
 		return catalogService.listFoods();
+	}
+
+	@GetMapping("/foods/barcode/{code}")
+	public ResponseEntity<FoodResponse> foodByBarcode(@PathVariable String code) {
+		FoodResponse food = offSyncService.importByBarcode(code);
+		return food == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(food);
 	}
 
 	@GetMapping("/exercises")

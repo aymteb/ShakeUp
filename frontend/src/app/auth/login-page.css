@@ -1,3 +1,14 @@
 :host {
   display: block;
+  color-scheme: dark;
+}
+
+.login-field {
+  caret-color: var(--volt);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host :is(.animate-rise, .animate-drift) {
+    animation: none !important;
+  }
 }

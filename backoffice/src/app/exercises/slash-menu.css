@@ -1,0 +1,16 @@
+:host {
+  display: contents;
+}
+
+.slash-backdrop {
+  background: rgba(11, 15, 14, 0.4);
+  backdrop-filter: blur(1px);
+}
+
+.slash-row:hover {
+  background: rgba(228, 235, 231, 0.6);
+}
+
+.slash-row-active {
+  background: color-mix(in srgb, var(--volt) 32%, white);
+}

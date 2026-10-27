@@ -1,13 +1,13 @@
 import { Component, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../core/auth.service';
 
 export const BACKOFFICE_URL = 'http://localhost:4300';
 
 @Component({
   selector: 'app-login-page',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule],
   templateUrl: './login-page.html',
   styleUrl: './login-page.css',
 })
@@ -42,11 +42,7 @@ export class LoginPage {
           this.error.set('Compte coach : utilisez le back-office.');
           return;
         }
-        if (res.mustChangePassword) {
-          void this.router.navigateByUrl('/password');
-          return;
-        }
-        void this.router.navigateByUrl('/eleve');
+        void this.router.navigateByUrl(this.auth.postLoginUrl(res));
       },
       error: () => this.error.set('Email ou mot de passe incorrect'),
     });

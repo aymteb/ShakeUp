@@ -18,8 +18,7 @@ export class EleveApi {
 
   plan(): Observable<Plan | null> {
     return this.http.get<Plan>(`${this.api}/plan`, { observe: 'response' }).pipe(
-      map((res) => (res.status === 204 ? null : res.body)),
-      catchError(() => of(null)),
+      map((res) => (res.status === 204 || res.body == null ? null : res.body)),
     );
   }
 
@@ -32,14 +31,21 @@ export class EleveApi {
   }
 
   target(): Observable<NutritionTarget | null> {
-    return this.http.get<NutritionTarget>(`${this.api}/nutrition-target`, { observe: 'response' }).pipe(
-      map((res) => (res.status === 204 ? null : res.body)),
-      catchError(() => of(null)),
-    );
+    return this.http
+      .get<NutritionTarget>(`${this.api}/nutrition-target`, { observe: 'response' })
+      .pipe(
+        map((res) => (res.status === 204 ? null : res.body)),
+        catchError(() => of(null)),
+      );
   }
 
-  foods() {
-    return this.http.get<Food[]>(`${this.api}/foods`);
+  foods(q?: string) {
+    const params = q && q.trim().length >= 2 ? { q: q.trim() } : undefined;
+    return this.http.get<Food[]>(`${this.api}/foods`, { params });
+  }
+
+  foodByBarcode(code: string) {
+    return this.http.get<Food>(`${this.api}/foods/barcode/${encodeURIComponent(code)}`);
   }
 
   diary(date: string) {
@@ -60,7 +66,9 @@ export class EleveApi {
   }
 
   feedback(channel: 'MUSCU' | 'NUTRITION') {
-    return this.http.get<FeedbackMessage[]>(`${this.api}/feedback`, { params: { channel } });
+    return this.http.get<FeedbackMessage[]>(`${this.api}/feedback`, {
+      params: { channel },
+    });
   }
 
   postFeedback(channel: 'MUSCU' | 'NUTRITION', body: string) {

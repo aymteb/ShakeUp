@@ -36,7 +36,10 @@ export class PasswordPage {
     this.auth.changePassword(currentPassword, newPassword).subscribe({
       next: () => {
         this.ok.set(true);
-        void this.router.navigateByUrl('/eleve');
+        const session = this.auth.session();
+        void this.router.navigateByUrl(
+          session ? this.auth.postLoginUrl(session) : '/login',
+        );
       },
       error: () => this.error.set('Impossible de changer le mot de passe'),
     });

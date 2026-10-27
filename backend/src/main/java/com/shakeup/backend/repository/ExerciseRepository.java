@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.shakeup.backend.domain.CatalogSource;
 import com.shakeup.backend.domain.Exercise;
 
 public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
@@ -14,6 +15,10 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
 	List<Exercise> findAllByOrderByNameAsc();
 
 	Optional<Exercise> findByNameIgnoreCase(String name);
+
+	Optional<Exercise> findBySourceAndExternalId(CatalogSource source, Long externalId);
+
+	long countBySource(CatalogSource source);
 
 	long count();
 }

@@ -1,0 +1,66 @@
+@if (open()) {
+  <div
+    class="slash-backdrop fixed inset-0 z-50 flex items-start justify-center px-4 pt-[15vh]"
+    (click)="closed.emit()"
+    role="presentation"
+  >
+    <div
+      class="w-full max-w-lg overflow-hidden border border-ash-line bg-paper-raised shadow-lift"
+      role="dialog"
+      aria-label="Commande slash — ajouter un exercice"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex items-center gap-2 border-b border-ash-line px-3 py-2.5">
+        <span class="font-display text-sm font-bold text-ink-mute">/</span>
+        <input
+          #slashInput
+          type="text"
+          class="min-w-0 flex-1 bg-transparent py-1.5 text-sm outline-none placeholder:text-ink-mute"
+          placeholder="squat, développé, gainage…"
+          [ngModel]="query()"
+          (ngModelChange)="setQuery($event)"
+          autocomplete="off"
+        />
+        <kbd class="hidden text-[10px] text-ink-mute sm:inline">Esc</kbd>
+      </div>
+
+      <div class="grid sm:grid-cols-[1fr_140px]">
+        <ul class="max-h-72 overflow-y-auto" role="listbox">
+          @for (ex of matches(); track ex.id; let i = $index) {
+            <li role="option" [attr.aria-selected]="activeIndex() === i">
+              <button
+                type="button"
+                class="slash-row flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-sm"
+                [class.slash-row-active]="activeIndex() === i"
+                (mouseenter)="highlight(i)"
+                (click)="select(ex)"
+              >
+                <span>
+                  <span class="font-medium text-ink">{{ ex.name }}</span>
+                  <span class="mt-0.5 block text-xs text-ink-mute">{{ ex.muscleGroup }}</span>
+                </span>
+              </button>
+            </li>
+          } @empty {
+            <li class="px-3 py-6 text-sm text-ink-mute">Aucun résultat</li>
+          }
+        </ul>
+
+        <aside class="hidden border-l border-ash-line bg-paper p-3 sm:block">
+          @if (preview(); as p) {
+            <img
+              [src]="p.demoUrl!"
+              [alt]="p.name"
+              class="aspect-square w-full border border-ash-line object-cover"
+              loading="lazy"
+            />
+          } @else {
+            <p class="text-[11px] leading-relaxed text-ink-mute">
+              Aperçu Wger si une image est dispo.
+            </p>
+          }
+        </aside>
+      </div>
+    </div>
+  </div>
+}

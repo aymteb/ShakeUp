@@ -1,6 +1,7 @@
 package com.shakeup.backend.config;
 
-import java.util.List;
+import java.time.Clock;
+import java.time.LocalDate;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -9,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.shakeup.backend.domain.CatalogSource;
 import com.shakeup.backend.domain.Exercise;
 import com.shakeup.backend.domain.ExerciseKind;
 import com.shakeup.backend.domain.NutritionTarget;
@@ -22,7 +24,7 @@ import com.shakeup.backend.repository.UserAccountRepository;
 import com.shakeup.backend.repository.WorkoutPlanRepository;
 
 @Component
-@Order(3)
+@Order(4)
 public class DemoDataSeed implements ApplicationRunner {
 
 	public static final String ELEVE_EMAIL = "eleve@shakeup.local";
@@ -33,24 +35,28 @@ public class DemoDataSeed implements ApplicationRunner {
 	private final ExerciseRepository exercises;
 	private final WorkoutPlanRepository plans;
 	private final NutritionTargetRepository targets;
+	private final Clock clock;
 
 	public DemoDataSeed(
 			UserAccountRepository users,
 			PasswordEncoder passwordEncoder,
 			ExerciseRepository exercises,
 			WorkoutPlanRepository plans,
-			NutritionTargetRepository targets) {
+			NutritionTargetRepository targets,
+			Clock clock) {
 		this.users = users;
 		this.passwordEncoder = passwordEncoder;
 		this.exercises = exercises;
 		this.plans = plans;
 		this.targets = targets;
+		this.clock = clock;
 	}
 
 	@Override
 	@Transactional
 	public void run(ApplicationArguments args) {
 		UserAccount eleve = users.findByEmailIgnoreCase(ELEVE_EMAIL).orElseGet(this::createEleve);
+		ensureCoachingWindow(eleve);
 		if (plans.findFirstByEleveAndActiveTrueOrderByIdDesc(eleve).isEmpty()) {
 			seedPlan(eleve);
 		}
@@ -66,17 +72,28 @@ public class DemoDataSeed implements ApplicationRunner {
 		eleve.setRole(Role.ELEVE);
 		eleve.setDisplayName("Camille Demo");
 		eleve.setMustChangePassword(false);
+		applyDefaultWindow(eleve);
 		return users.save(eleve);
 	}
 
-	private void seedPlan(UserAccount eleve) {
-		List<Exercise> catalog = exercises.findAll();
-		Exercise squat = find(catalog, "Squat");
-		Exercise bench = find(catalog, "Développé couché");
-		Exercise plank = find(catalog, "Gainage");
-		if (squat == null || bench == null || plank == null) {
+	private void ensureCoachingWindow(UserAccount eleve) {
+		if (eleve.getCoachingStartsOn() != null && eleve.getCoachingEndsOn() != null) {
 			return;
 		}
+		applyDefaultWindow(eleve);
+		users.save(eleve);
+	}
+
+	private void applyDefaultWindow(UserAccount eleve) {
+		LocalDate today = LocalDate.now(clock);
+		eleve.setCoachingStartsOn(today.minusDays(30));
+		eleve.setCoachingEndsOn(today.plusWeeks(12));
+	}
+
+	private void seedPlan(UserAccount eleve) {
+		Exercise squat = ensureDemoExercise("Squat", "Jambes", ExerciseKind.LOAD);
+		Exercise bench = ensureDemoExercise("Développé couché", "Pectoraux", ExerciseKind.LOAD);
+		Exercise plank = ensureDemoExercise("Gainage", "Core", ExerciseKind.HOLD);
 
 		WorkoutPlan plan = new WorkoutPlan();
 		plan.setEleve(eleve);
@@ -91,6 +108,18 @@ public class DemoDataSeed implements ApplicationRunner {
 		plans.save(plan);
 	}
 
+	private Exercise ensureDemoExercise(String name, String muscle, ExerciseKind kind) {
+		return exercises.findByNameIgnoreCase(name).orElseGet(() -> {
+			Exercise e = new Exercise();
+			e.setName(name);
+			e.setMuscleGroup(muscle);
+			e.setKind(kind);
+			e.setSource(CatalogSource.CUSTOM);
+			e.setHidden(false);
+			return exercises.save(e);
+		});
+	}
+
 	private void seedTarget(UserAccount eleve) {
 		NutritionTarget target = new NutritionTarget();
 		target.setEleve(eleve);
@@ -100,13 +129,6 @@ public class DemoDataSeed implements ApplicationRunner {
 		target.setFatG(70);
 		target.setCoachNote("Vise les protéines à chaque repas. Jour d’entraînement : garde les glucides.");
 		targets.save(target);
-	}
-
-	private static Exercise find(List<Exercise> catalog, String name) {
-		return catalog.stream()
-				.filter(e -> name.equalsIgnoreCase(e.getName()))
-				.findFirst()
-				.orElse(null);
 	}
 
 	private static WorkoutPlanItem loadItem(

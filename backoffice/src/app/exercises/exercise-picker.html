@@ -1,0 +1,114 @@
+@if (open()) {
+  <div
+    class="picker-backdrop fixed inset-0 z-50 flex items-center justify-center p-4"
+    (click)="backdropClose()"
+    role="presentation"
+  >
+    <div
+      class="flex max-h-[min(90dvh,640px)] w-full max-w-3xl flex-col overflow-hidden border border-ash-line bg-paper-raised shadow-lift"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Choisir un exercice"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="flex items-center justify-between border-b border-ash-line px-5 py-4">
+        <div>
+          <h2 class="font-display text-lg font-bold tracking-tight">Catalogue exercices</h2>
+          <p class="text-xs text-ink-mute">Écorché · aperçu · Entrée pour ajouter</p>
+        </div>
+        <button
+          type="button"
+          class="text-sm text-ink-mute hover:text-ink"
+          (click)="closed.emit()"
+        >
+          Fermer
+        </button>
+      </header>
+
+      <div class="grid min-h-0 flex-1 md:grid-cols-[168px_1fr]">
+        <aside class="hidden overflow-y-auto border-r border-ash-line bg-paper px-2 py-3 md:block">
+          <app-body-map [selected]="muscle()" (muscleSelect)="setMuscle($event)" />
+        </aside>
+
+        <div class="flex min-h-0 flex-col">
+          <div class="border-b border-ash-line px-4 py-3">
+            <input
+              #searchInput
+              type="search"
+              class="w-full border border-ash-line bg-paper px-3 py-2.5 text-sm focus:border-ink focus:outline-none"
+              placeholder="Rechercher un exercice…"
+              [ngModel]="query()"
+              (ngModelChange)="onQuery($event)"
+              autocomplete="off"
+            />
+            <div class="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-ink-mute">
+              <span>
+                {{ resultCount() }} exercice{{ resultCount() > 1 ? 's' : '' }}
+                @if (muscle(); as g) {
+                  · <span class="font-semibold text-ink">{{ g }}</span>
+                  <button type="button" class="ml-1 underline" (click)="clearMuscle()">reset</button>
+                }
+              </span>
+            </div>
+            <div class="mt-2 md:hidden">
+              <app-body-map [selected]="muscle()" (muscleSelect)="setMuscle($event)" />
+            </div>
+          </div>
+
+          <div class="grid min-h-0 flex-1 md:grid-cols-[1fr_180px]">
+            <ul class="min-h-0 overflow-y-auto" role="listbox">
+              @for (ex of filtered(); track ex.id) {
+                <li role="option" [attr.aria-selected]="activeId() === ex.id">
+                  <button
+                    type="button"
+                    class="ex-row flex w-full items-start justify-between gap-3 border-b border-ash-line px-4 py-3 text-left transition"
+                    [class.ex-row-active]="activeId() === ex.id"
+                    (mouseenter)="activate(ex)"
+                    (focus)="activate(ex)"
+                    (click)="select(ex)"
+                  >
+                    <span>
+                      <span class="block text-sm font-medium text-ink">{{ ex.name }}</span>
+                      <span class="mt-0.5 block text-xs text-ink-mute">
+                        {{ ex.muscleGroup }} · {{ ex.kind === 'HOLD' ? 'durée' : 'charge' }}
+                      </span>
+                    </span>
+                    @if (ex.demoUrl) {
+                      <span class="media-badge mt-0.5 shrink-0">média</span>
+                    }
+                  </button>
+                </li>
+              } @empty {
+                <li class="px-4 py-8 text-sm text-ink-mute">Aucun exercice pour ce filtre.</li>
+              }
+            </ul>
+
+            <aside
+              class="hidden border-l border-ash-line bg-paper p-4 md:flex md:flex-col"
+              aria-live="polite"
+            >
+              <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-mute">
+                Aperçu
+              </p>
+              @if (preview(); as p) {
+                <div class="mt-3 overflow-hidden border border-ash-line bg-paper">
+                  <img
+                    [src]="p.demoUrl!"
+                    [alt]="p.name"
+                    class="aspect-square w-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <p class="mt-3 text-xs font-medium leading-snug text-ink">{{ p.name }}</p>
+              } @else {
+                <p class="mt-6 text-xs leading-relaxed text-ink-mute">
+                  Survole un exercice avec média Wger pour voir le mouvement.
+                </p>
+              }
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

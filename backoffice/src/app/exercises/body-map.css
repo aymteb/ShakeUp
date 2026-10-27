@@ -1,0 +1,156 @@
+.map {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.side-toggle {
+  display: inline-flex;
+  border: 1px solid var(--ash-line);
+  background: var(--paper-raised);
+  padding: 2px;
+}
+
+.side-btn {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ink-mute);
+}
+
+.side-btn-on {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.frame {
+  width: 100%;
+  max-width: 148px;
+  padding: 0.5rem 0.25rem 0.75rem;
+  border: 1px solid var(--ash-line);
+  background:
+    radial-gradient(
+      ellipse at 50% 12%,
+      color-mix(in srgb, var(--volt) 12%, transparent),
+      transparent 58%
+    ),
+    var(--paper-raised);
+}
+
+.figure {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.outline {
+  fill: none;
+  stroke: #d5ddd8;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.zone {
+  fill: transparent;
+  stroke: #b8c4bd;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  cursor: pointer;
+  transition:
+    fill 140ms ease,
+    stroke 140ms ease,
+    stroke-width 140ms ease;
+}
+
+.zone:hover {
+  fill: color-mix(in srgb, var(--volt) 14%, transparent);
+  stroke: var(--volt-dim);
+  stroke-width: 2;
+}
+
+.zone-on {
+  fill: color-mix(in srgb, var(--volt) 28%, transparent);
+  stroke: var(--volt);
+  stroke-width: 2.25;
+}
+
+.zone-deco {
+  cursor: default;
+  pointer-events: none;
+  fill: color-mix(in srgb, #c5d0cb 18%, transparent);
+  stroke: #cdd6d0;
+  stroke-width: 1.2;
+}
+
+.cardio {
+  border: 1px solid var(--ash-line);
+  background: var(--paper-raised);
+  padding: 0.3rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--ink-mute);
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
+}
+
+.cardio:hover {
+  border-color: var(--volt-dim);
+  color: var(--ink);
+}
+
+.cardio-on {
+  border-color: var(--volt-dim);
+  background: color-mix(in srgb, var(--volt) 28%, white);
+  color: var(--ink);
+}
+
+.hint {
+  margin: 0;
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--ink-mute);
+}
+
+.hint-on {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.hint-clear {
+  margin-left: 0.4rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  color: var(--ink-mute);
+}
+
+.hint-clear:hover {
+  color: var(--ink);
+}
+
+.credit {
+  margin: 0;
+  max-width: 11rem;
+  text-align: center;
+  font-size: 0.6rem;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--ink-mute) 75%, white);
+}
+
+.credit a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 1px;
+}
+
+@media (max-width: 767px) {
+  .frame {
+    max-width: 120px;
+  }
+}

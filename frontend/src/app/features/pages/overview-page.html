@@ -1,4 +1,4 @@
-<article class="prose-shakeup">
+<article>
   <h1 class="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
     Ce que ShakeUp change pour vous
   </h1>
@@ -7,35 +7,29 @@
     restent au même endroit.
   </p>
 
-  <div
-    class="mt-10 aspect-[16/9] border border-dashed border-ash-line bg-[linear-gradient(145deg,rgba(184,240,0,0.12),transparent_50%)]"
-    role="img"
-    aria-label="Emplacement capture d’écran — à venir"
-  >
-    <p class="flex h-full items-center justify-center text-sm text-ink-mute">
-      Capture produit — à venir
-    </p>
+  <div class="feat-shot mt-10" role="img" aria-label="Emplacement capture d’écran — à venir">
+    Capture produit — à venir
   </div>
 
   <h2 class="mt-12 font-display text-xl font-bold tracking-tight">Trois piliers</h2>
-  <ul class="mt-4 space-y-4 text-ink-mute">
+  <ul class="mt-5 grid gap-3 sm:grid-cols-3">
     <li>
-      <a routerLink="/features/musculation" class="font-medium text-ink underline-offset-2 hover:underline"
-        >Musculation</a
-      >
-      — programme du coach, séries cibles, séances cochées.
+      <a routerLink="/features/musculation" class="su-panel block h-full px-4 py-4 transition">
+        <p class="font-display text-base font-bold text-ink">Musculation</p>
+        <p class="mt-1.5 text-sm text-ink-mute">Programme du coach, séries cibles, séances cochées.</p>
+      </a>
     </li>
     <li>
-      <a routerLink="/features/nutrition" class="font-medium text-ink underline-offset-2 hover:underline"
-        >Nutrition</a
-      >
-      — consignes kcal / macros et journal du jour.
+      <a routerLink="/features/nutrition" class="su-panel block h-full px-4 py-4 transition">
+        <p class="font-display text-base font-bold text-ink">Nutrition</p>
+        <p class="mt-1.5 text-sm text-ink-mute">Consignes kcal / macros et journal du jour.</p>
+      </a>
     </li>
     <li>
-      <a routerLink="/features/pwa" class="font-medium text-ink underline-offset-2 hover:underline"
-        >App mobile</a
-      >
-      — s’installe en un clic, sans store.
+      <a routerLink="/features/pwa" class="su-panel block h-full px-4 py-4 transition">
+        <p class="font-display text-base font-bold text-ink">App mobile</p>
+        <p class="mt-1.5 text-sm text-ink-mute">S’installe en un clic, sans store.</p>
+      </a>
     </li>
   </ul>
 

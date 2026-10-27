@@ -55,6 +55,16 @@ public class CatalogService {
 		return foods.findAllByOrderByNameAsc().stream().map(FoodResponse::from).toList();
 	}
 
+	public List<FoodResponse> searchLocalFoods(String query) {
+		String q = query == null ? "" : query.trim();
+		if (q.isEmpty()) {
+			return listFoods();
+		}
+		return foods.findByNameContainingIgnoreCaseOrderByNameAsc(q).stream()
+				.map(FoodResponse::from)
+				.toList();
+	}
+
 	public FoodResponse createFood(CreateFoodRequest request) {
 		Food f = new Food();
 		f.setName(request.name().trim());

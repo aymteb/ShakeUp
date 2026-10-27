@@ -32,6 +32,15 @@ public class Food {
 	@Column(name = "fat_per_100g", nullable = false)
 	private double fatPer100g;
 
+	@Column(name = "image_url")
+	private String imageUrl;
+
+	@Column(name = "serving_grams")
+	private Double servingGrams;
+
+	@Column(name = "external_id")
+	private String externalId;
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private CatalogSource source;
@@ -78,6 +87,30 @@ public class Food {
 
 	public void setFatPer100g(double fatPer100g) {
 		this.fatPer100g = fatPer100g;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public Double getServingGrams() {
+		return servingGrams;
+	}
+
+	public void setServingGrams(Double servingGrams) {
+		this.servingGrams = servingGrams;
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 
 	public CatalogSource getSource() {

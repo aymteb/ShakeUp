@@ -19,6 +19,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.shakeup.backend.security.EleveCoachingAccessFilter;
 import com.shakeup.backend.security.JwtAuthFilter;
 
 @Configuration
@@ -26,7 +27,11 @@ import com.shakeup.backend.security.JwtAuthFilter;
 public class SecurityConfig {
 
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
+	SecurityFilterChain securityFilterChain(
+			HttpSecurity http,
+			JwtAuthFilter jwtAuthFilter,
+			EleveCoachingAccessFilter eleveCoachingAccessFilter)
+			throws Exception {
 		http
 				.csrf(csrf -> csrf.disable())
 				.cors(Customizer.withDefaults())
@@ -35,7 +40,8 @@ public class SecurityConfig {
 						.requestMatchers("/api/v1/health", "/api/v1/auth/login", "/api/v1/contact").permitAll()
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.anyRequest().authenticated())
-				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+				.addFilterAfter(eleveCoachingAccessFilter, JwtAuthFilter.class);
 		return http.build();
 	}
 

@@ -1,3 +1,43 @@
 :host {
   display: block;
 }
+
+.features-root {
+  background: transparent;
+}
+
+:host ::ng-deep .su-nav {
+  border-radius: 999px;
+  padding: 0.6rem 0.9rem;
+  font-weight: 500;
+  color: var(--ink-mute);
+  transition:
+    color var(--duration-ui) ease,
+    background-color var(--duration-ui) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :host ::ng-deep .su-nav:hover {
+    background: color-mix(in srgb, var(--ash) 90%, white);
+    color: var(--ink);
+  }
+}
+
+:host ::ng-deep .su-nav-on {
+  background: var(--ink);
+  color: #fff;
+}
+
+:host ::ng-deep .feat-shot {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  border: 1px solid color-mix(in srgb, var(--ash-line) 80%, white);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(ellipse at top left, color-mix(in srgb, var(--volt) 18%, transparent), transparent 55%),
+    var(--paper-raised);
+  box-shadow: var(--shadow-soft);
+  color: var(--ink-mute);
+  font-size: 0.875rem;
+}

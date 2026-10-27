@@ -1,5 +1,7 @@
 package com.shakeup.backend.web.dto;
 
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -7,5 +9,7 @@ import jakarta.validation.constraints.Size;
 public record CreateEleveRequest(
 		@NotBlank @Email String email,
 		@NotBlank @Size(max = 120) String displayName,
-		@NotBlank @Size(min = 6, max = 100) String temporaryPassword) {
+		@NotBlank @Size(min = 6, max = 100) String temporaryPassword,
+		LocalDate coachingStartsOn,
+		LocalDate coachingEndsOn) {
 }

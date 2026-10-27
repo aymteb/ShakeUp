@@ -1,0 +1,40 @@
+<div class="relative flex min-h-dvh items-center justify-center px-6 py-12">
+  <div class="su-panel relative w-full max-w-md px-6 py-8 sm:px-8">
+    <p class="text-sm font-medium text-ink-mute">ShakeUp</p>
+    <h1 class="mt-2 font-display text-3xl font-bold tracking-tight text-ink">
+      Ton suivi est en pause
+    </h1>
+    <div class="mt-3 space-y-3 text-sm leading-relaxed text-ink-mute">
+      <p>
+        @if (displayName()) {
+          Bonjour {{ displayName() }}.
+        }
+        Ta période de coaching est arrivée à son terme
+        @if (endsOn(); as end) {
+          le {{ formatDate(end) }}
+        }
+        .
+      </p>
+      <p>
+        Tes programmes, ton journal et tes données de nutrition sont sauvegardés
+        en toute sécurité. Contacte {{ coachDisplayName() }} pour définir tes
+        prochains objectifs et réactiver ton espace.
+      </p>
+    </div>
+
+    <div class="mt-8 flex flex-col gap-3">
+      @if (mailtoHref(); as href) {
+        <a [href]="href" class="su-btn-primary w-full py-3 text-center">
+          Contacter mon coach
+        </a>
+      } @else {
+        <p class="text-center text-sm text-ink-mute">
+          Demande à ton coach de te recontacter pour réactiver ton accès.
+        </p>
+      }
+      <button type="button" class="su-btn-ghost w-full py-3" (click)="auth.logout()">
+        Se déconnecter
+      </button>
+    </div>
+  </div>
+</div>

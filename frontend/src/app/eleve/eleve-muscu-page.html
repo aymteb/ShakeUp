@@ -1,58 +1,126 @@
-<main class="page">
-  <a routerLink="/eleve">← Accueil</a>
-  <h1>Musculation</h1>
+<div class="relative min-h-dvh text-ink">
+  <header class="flex items-center justify-between px-5 pt-6">
+    <a routerLink="/eleve" class="text-sm text-ink-mute transition hover:text-ink">← Accueil</a>
+    @if (live()) {
+      <button type="button" class="text-sm text-ink-mute hover:text-ink" (click)="exitLive()">
+        Quitter live
+      </button>
+    }
+  </header>
 
-  @if (error()) {
-    <p class="error">{{ error() }}</p>
-  }
-  @if (ok()) {
-    <p class="ok">{{ ok() }}</p>
-  }
+  <main class="px-5 pb-12 pt-6">
+    @if (error()) {
+      <p class="mb-4 text-sm text-red-700" role="alert">{{ error() }}</p>
+    }
+    @if (ok()) {
+      <p class="mb-4 text-sm text-volt" role="status">{{ ok() }}</p>
+    }
 
-  @if (plan(); as p) {
-    <section>
-      <h2>{{ p.title }}</h2>
-      @if (p.notes) {
-        <p class="muted">{{ p.notes }}</p>
-      }
-      <ul class="plan-list">
-        @for (item of p.items; track item.id) {
-          <li>
-            <strong>{{ item.exerciseName }}</strong>
-            <span class="muted">{{ item.muscleGroup }}</span>
-            <span>{{ formatItem(item) }}</span>
-          </li>
+    @if (!live()) {
+      <h1 class="font-display text-3xl font-bold tracking-tight">Musculation</h1>
+      @if (plan(); as p) {
+        <p class="mt-2 text-ink-mute">{{ p.title }}</p>
+        @if (p.notes) {
+          <p class="mt-1 text-sm text-ink-mute">{{ p.notes }}</p>
         }
-      </ul>
-    </section>
-  } @else {
-    <p class="muted">Aucun programme assigné pour le moment.</p>
-  }
 
-  <section>
-    <h2>Séance du jour</h2>
-    <form class="grid" [formGroup]="form" (ngSubmit)="saveLog()">
-      <label class="check">
-        <input type="checkbox" formControlName="done" />
-        Séance faite
-      </label>
-      <label>Commentaire <input formControlName="comment" /></label>
-      <button type="submit">Enregistrer</button>
-    </form>
-  </section>
+        <ul class="mt-8 space-y-3">
+          @for (item of p.items; track item.id ?? $index) {
+            <li class="su-panel px-4 py-3.5">
+              <p class="font-medium">{{ item.exerciseName }}</p>
+              <p class="text-xs text-ink-mute">{{ item.muscleGroup }}</p>
+              <p class="mt-1 text-sm text-ink-mute">{{ formatItem(item) }}</p>
+            </li>
+          }
+        </ul>
 
-  <section>
-    <h2>Retours coach</h2>
-    <ul>
-      @for (m of feedback(); track m.id) {
-        <li><strong>{{ m.authorName }}</strong> : {{ m.body }}</li>
-      } @empty {
-        <li class="muted">Pas encore de retour.</li>
+        <button type="button" class="su-btn-primary mt-8 w-full py-3.5" (click)="startLive()">
+          Démarrer la séance live
+        </button>
+        <p class="mt-3 text-center text-xs text-ink-mute">
+          {{ doneCount() }}/{{ totalSets() }} séries déjà cochées
+        </p>
+      } @else {
+        <p class="mt-6 text-sm text-ink-mute">Aucun programme assigné.</p>
       }
-    </ul>
-    <form class="grid" [formGroup]="feedbackForm" (ngSubmit)="sendFeedback()">
-      <label>Message <input formControlName="body" /></label>
-      <button type="submit">Envoyer</button>
-    </form>
-  </section>
-</main>
+    } @else {
+      @if (currentItem(); as item) {
+        <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-volt">
+          {{ progressLabel() }}
+        </p>
+        <h1 class="mt-2 font-display text-3xl font-bold tracking-tight">{{ item.exerciseName }}</h1>
+        <p class="mt-1 text-sm text-ink-mute">{{ item.muscleGroup }} · cible {{ formatItem(item) }}</p>
+
+        @if (restLeft() > 0) {
+          <div class="mt-10 border border-volt/40 bg-paper-raised px-5 py-8 text-center">
+            <p class="text-xs uppercase tracking-[0.16em] text-ink-mute">Repos</p>
+            <p class="mt-3 font-display text-6xl font-extrabold tabular-nums text-volt">
+              {{ restLeft() }}
+            </p>
+            <button
+              type="button"
+              class="mt-6 text-sm text-ink-mute underline-offset-2 hover:text-ink hover:underline"
+              (click)="skipRest()"
+            >
+              Passer le repos
+            </button>
+          </div>
+        } @else {
+          <div class="mt-8 space-y-4 border border-ash-line bg-paper-raised p-5">
+            @if (item.exerciseKind === 'HOLD') {
+              <label class="block space-y-1.5 text-sm">
+                <span class="text-ink-mute">Durée réalisée (s)</span>
+                <input
+                  type="number"
+                  min="1"
+                  class="field"
+                  [ngModel]="sets()[exerciseIndex()][setIndex()].durationSeconds"
+                  (ngModelChange)="patchSet('durationSeconds', num($event))"
+                />
+              </label>
+            } @else {
+              <label class="block space-y-1.5 text-sm">
+                <span class="text-ink-mute">Reps</span>
+                <input
+                  type="number"
+                  min="1"
+                  class="field"
+                  [ngModel]="sets()[exerciseIndex()][setIndex()].reps"
+                  (ngModelChange)="patchSet('reps', num($event))"
+                />
+              </label>
+              <label class="block space-y-1.5 text-sm">
+                <span class="text-ink-mute">Charge (kg)</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  class="field"
+                  [ngModel]="sets()[exerciseIndex()][setIndex()].weightKg"
+                  (ngModelChange)="patchSet('weightKg', num($event))"
+                />
+              </label>
+            }
+
+            <button
+              type="button"
+              class="su-btn-primary w-full py-3.5"
+              (click)="completeSet()"
+            >
+              Valider la série
+            </button>
+          </div>
+        }
+
+        <div class="mt-8 flex flex-wrap gap-2">
+          @for (s of sets()[exerciseIndex()]; track $index) {
+            <span
+              class="set-dot"
+              [class.set-dot-on]="s.done || $index === setIndex()"
+            ></span>
+          }
+        </div>
+      }
+    }
+  </main>
+</div>

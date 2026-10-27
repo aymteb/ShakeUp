@@ -18,10 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.shakeup.backend.domain.FeedbackChannel;
 import com.shakeup.backend.domain.UserAccount;
+import com.shakeup.backend.service.CoachingWeekService;
 import com.shakeup.backend.service.FeedbackService;
 import com.shakeup.backend.service.NutritionService;
 import com.shakeup.backend.service.PlanService;
 import com.shakeup.backend.service.WorkoutLogService;
+import com.shakeup.backend.web.dto.CoachingWeekRequest;
+import com.shakeup.backend.web.dto.CoachingWeekResponse;
 import com.shakeup.backend.web.dto.DiaryDayResponse;
 import com.shakeup.backend.web.dto.FeedbackRequest;
 import com.shakeup.backend.web.dto.FeedbackResponse;
@@ -42,16 +45,19 @@ public class CoachProgramController {
 	private final WorkoutLogService workoutLogService;
 	private final NutritionService nutritionService;
 	private final FeedbackService feedbackService;
+	private final CoachingWeekService coachingWeeks;
 
 	public CoachProgramController(
 			PlanService planService,
 			WorkoutLogService workoutLogService,
 			NutritionService nutritionService,
-			FeedbackService feedbackService) {
+			FeedbackService feedbackService,
+			CoachingWeekService coachingWeeks) {
 		this.planService = planService;
 		this.workoutLogService = workoutLogService;
 		this.nutritionService = nutritionService;
 		this.feedbackService = feedbackService;
+		this.coachingWeeks = coachingWeeks;
 	}
 
 	@GetMapping("/plan")
@@ -88,6 +94,23 @@ public class CoachProgramController {
 			@PathVariable Long eleveId,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 		return nutritionService.getDiary(eleveId, date);
+	}
+
+	@GetMapping("/coaching-weeks")
+	public List<CoachingWeekResponse> coachingWeeks(@PathVariable Long eleveId) {
+		return coachingWeeks.listForEleve(eleveId);
+	}
+
+	@GetMapping("/coaching-weeks/current")
+	public CoachingWeekResponse currentCoachingWeek(@PathVariable Long eleveId) {
+		return coachingWeeks.currentForEleve(eleveId);
+	}
+
+	@PutMapping("/coaching-weeks")
+	public CoachingWeekResponse saveCoachingWeek(
+			@PathVariable Long eleveId,
+			@Valid @RequestBody CoachingWeekRequest request) {
+		return coachingWeeks.upsert(eleveId, request);
 	}
 
 	@GetMapping("/feedback")

@@ -1,112 +1,354 @@
-<main class="page">
-  <a routerLink="/eleve">← Accueil</a>
-  <h1>Nutrition</h1>
+<div class="nutri relative min-h-dvh">
+  <header class="flex items-center justify-between px-5 pt-6">
+    <a routerLink="/eleve" class="text-sm text-ink-mute transition hover:text-ink">← Accueil</a>
+    <p class="font-display text-sm font-bold tracking-wide text-ink">Nutrition</p>
+  </header>
 
-  @if (error()) {
-    <p class="error">{{ error() }}</p>
-  }
-
-  <section class="consignes">
-    <h2>Consignes du jour</h2>
-    @if (target(); as t) {
-      <p><strong>{{ t.caloriesKcal }} kcal</strong></p>
-      <p>
-        @if (t.proteinG != null) {
-          <span>P {{ t.proteinG }}g</span>
-        }
-        @if (t.carbsG != null) {
-          <span> · G {{ t.carbsG }}g</span>
-        }
-        @if (t.fatG != null) {
-          <span> · L {{ t.fatG }}g</span>
-        }
-      </p>
-      @if (t.coachNote) {
-        <p class="note">{{ t.coachNote }}</p>
-      }
-      @if (remainingKcal() != null) {
-        <p>Restant : {{ remainingKcal() }} kcal</p>
-      }
-    } @else {
-      <p class="muted">Pas encore de consignes du coach.</p>
+  <main class="space-y-10 px-5 pb-16 pt-7">
+    @if (error()) {
+      <p class="banner-err" role="alert">{{ error() }}</p>
     }
-  </section>
+    @if (ok()) {
+      <p class="banner-ok" role="status">{{ ok() }}</p>
+    }
 
-  @if (diary(); as d) {
-    <section>
-      <h2>Totaux</h2>
-      <p>
-        {{ d.totalKcal }} kcal — P {{ d.totalProteinG }} / G {{ d.totalCarbsG }} / L
-        {{ d.totalFatG }}
+    <section class="nutri-rise">
+      <h1 class="font-display text-3xl font-bold tracking-tight sm:text-4xl">Journal</h1>
+      <p class="mt-2 max-w-sm text-sm leading-relaxed text-ink-mute">
+        Open Food Facts · macros au gramme près
       </p>
+
       @if (target(); as t) {
-        <div class="gauges">
-          <div>Calories {{ d.totalKcal }} / {{ t.caloriesKcal }}</div>
-          @if (t.proteinG != null) {
-            <div>Protéines {{ d.totalProteinG }} / {{ t.proteinG }}</div>
+        <div class="macro-grid mt-7">
+          <div class="macro-cell" style="--d: 0ms">
+            <p class="macro-label">Kcal restantes</p>
+            <p class="macro-value tabular-nums" [class.macro-over]="(kcalLeft() ?? 0) < 0">
+              {{ formatLeft(kcalLeft()) }}
+            </p>
+            <p class="macro-sub">sur {{ t.caloriesKcal }}</p>
+            <div class="macro-track" aria-hidden="true">
+              <i [style.width.%]="kcalPct()"></i>
+            </div>
+          </div>
+          <div class="macro-cell" style="--d: 60ms">
+            <p class="macro-label">Protéines</p>
+            <p class="macro-value tabular-nums" [class.macro-over]="(proteinLeft() ?? 0) < 0">
+              {{ formatLeft(proteinLeft()) }}<span class="macro-unit">g</span>
+            </p>
+            <p class="macro-sub">restantes · {{ t.proteinG ?? '—' }}g</p>
+            <div class="macro-track" aria-hidden="true">
+              <i [style.width.%]="proteinPct()"></i>
+            </div>
+          </div>
+          <div class="macro-cell" style="--d: 120ms">
+            <p class="macro-label">Glucides</p>
+            <p class="macro-value tabular-nums" [class.macro-over]="(carbsLeft() ?? 0) < 0">
+              {{ formatLeft(carbsLeft()) }}<span class="macro-unit">g</span>
+            </p>
+            <p class="macro-sub">restants · {{ t.carbsG ?? '—' }}g</p>
+            <div class="macro-track" aria-hidden="true">
+              <i [style.width.%]="carbsPct()"></i>
+            </div>
+          </div>
+          <div class="macro-cell" style="--d: 180ms">
+            <p class="macro-label">Lipides</p>
+            <p class="macro-value tabular-nums" [class.macro-over]="(fatLeft() ?? 0) < 0">
+              {{ formatLeft(fatLeft()) }}<span class="macro-unit">g</span>
+            </p>
+            <p class="macro-sub">restants · {{ t.fatG ?? '—' }}g</p>
+            <div class="macro-track" aria-hidden="true">
+              <i [style.width.%]="fatPct()"></i>
+            </div>
+          </div>
+        </div>
+
+        @if (t.coachNote) {
+          <aside class="coach-card mt-5" aria-label="Consignes du coach">
+            <svg class="coach-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.75" />
+              <path
+                d="M12 11v5M12 8h.01"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+              />
+            </svg>
+            <div>
+              <p class="coach-title">Consignes coach</p>
+              <p class="coach-text">{{ t.coachNote }}</p>
+            </div>
+          </aside>
+        }
+      }
+    </section>
+
+    <section class="space-y-4 nutri-rise nutri-rise-delay">
+      <h2 class="font-display text-lg font-bold tracking-tight">Ajouter</h2>
+
+      <div class="meal-rail" role="group" aria-label="Repas">
+        @for (m of meals; track m.id) {
+          <button
+            type="button"
+            class="meal-chip"
+            [class.meal-chip-on]="mealSlot() === m.id"
+            (click)="mealSlot.set(m.id)"
+          >
+            {{ m.label }}
+          </button>
+        }
+      </div>
+
+      <form class="search-shell" (submit)="$event.preventDefault(); onSearchSubmit()">
+        <label class="sr-only" for="food-search">Rechercher un aliment ou saisir un code EAN</label>
+        <input
+          id="food-search"
+          type="search"
+          enterkeyhint="search"
+          class="search-field"
+          placeholder="Aliment ou code-barres…"
+          autocomplete="off"
+          name="foodSearch"
+          [ngModel]="query()"
+          (ngModelChange)="onQuery($event)"
+          [disabled]="barcodeLoading()"
+        />
+        <button
+          type="button"
+          class="scan-icon-btn"
+          [class.scan-icon-btn-on]="scanning()"
+          [attr.aria-label]="scanning() ? 'Arrêter le scan' : 'Scanner un code-barres'"
+          [disabled]="barcodeLoading()"
+          (click)="toggleScanner()"
+        >
+          @if (scanning()) {
+            <span class="scan-stop-dot" aria-hidden="true"></span>
+          } @else {
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M4 7V5a1 1 0 0 1 1-1h2M4 17v2a1 1 0 0 0 1 1h2M20 7V5a1 1 0 0 0-1-1h-2M20 17v2a1 1 0 0 1-1 1h-2M7 8h10v8H7z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M9 12h6"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+              />
+            </svg>
           }
-          @if (t.carbsG != null) {
-            <div>Glucides {{ d.totalCarbsG }} / {{ t.carbsG }}</div>
-          }
-          @if (t.fatG != null) {
-            <div>Lipides {{ d.totalFatG }} / {{ t.fatG }}</div>
-          }
+        </button>
+      </form>
+
+      @if (fieldError()) {
+        <p class="field-err" role="alert">{{ fieldError() }}</p>
+      }
+
+      @if (scanning()) {
+        <div class="scan-viewport">
+          <video #scanVideo class="scan-video" playsinline muted autoplay></video>
+          <div class="scan-frame" aria-hidden="true"></div>
+        </div>
+        <p class="hint">Cadre le code EAN — ou tape-le puis Entrée.</p>
+      }
+
+      @if (searching() || barcodeLoading()) {
+        <p class="hint">{{ barcodeLoading() ? 'Lecture code-barres…' : 'Recherche…' }}</p>
+      }
+
+      <ul class="food-list">
+        @for (f of foods().slice(0, 12); track f.id) {
+          <li>
+            <button type="button" class="food-row" (click)="selectFood(f)">
+              @if (f.imageUrl) {
+                <img [src]="f.imageUrl" [alt]="f.name" class="food-thumb" loading="lazy" />
+              } @else {
+                <span class="food-thumb food-thumb-empty" aria-hidden="true"></span>
+              }
+              <span class="min-w-0 flex-1 text-left">
+                <span class="block truncate text-sm font-medium leading-snug">{{ f.name }}</span>
+                <span class="mt-0.5 block text-xs text-ink-mute">
+                  {{ f.kcalPer100g }} kcal/100g · P {{ f.proteinPer100g }}
+                </span>
+              </span>
+            </button>
+          </li>
+        } @empty {
+          <li class="food-empty">Tape un aliment ou un code EAN, puis Entrée.</li>
+        }
+      </ul>
+    </section>
+
+    <section class="space-y-5 nutri-rise nutri-rise-late">
+      <h2 class="font-display text-lg font-bold tracking-tight">Aujourd’hui</h2>
+      @for (m of meals; track m.id) {
+        <div class="day-slot">
+          <p class="day-slot-label">{{ m.label }}</p>
+          <ul class="mt-2 space-y-2">
+            @for (e of entriesFor(m.id); track e.id) {
+              <li class="swipe-item">
+                <button
+                  type="button"
+                  class="swipe-delete"
+                  [attr.aria-label]="'Retirer ' + e.foodName"
+                  (click)="remove(e.id)"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M5 7h14M10 7V5h4v2M9 7l.6 12h4.8L15 7"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+                <div
+                  class="entry-front"
+                  [class.entry-front-drag]="swiping() && swipeId() === e.id"
+                  [style.transform]="'translate3d(' + entryShift(e.id) + 'px,0,0)'"
+                  (pointerdown)="onSwipeStart($event, e.id)"
+                  (pointermove)="onSwipeMove($event)"
+                  (pointerup)="onSwipeEnd()"
+                  (pointercancel)="onSwipeEnd()"
+                >
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate text-sm font-medium">{{ e.foodName }}</p>
+                    <p class="text-xs text-ink-mute">
+                      {{ e.grams }} g · {{ e.kcal }} kcal · P {{ e.proteinG }}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    class="entry-icon-btn"
+                    [attr.aria-label]="'Retirer ' + e.foodName"
+                    (click)="$event.stopPropagation(); remove(e.id)"
+                    (pointerdown)="$event.stopPropagation()"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M7 7l10 10M17 7L7 17"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </li>
+            } @empty {
+              <li class="day-empty">Aucun aliment ajouté</li>
+            }
+          </ul>
         </div>
       }
     </section>
+  </main>
+
+  @if (selectedFood(); as f) {
+    <div class="sheet-root" role="dialog" aria-modal="true" [attr.aria-label]="'Portion — ' + f.name">
+      <button type="button" class="sheet-backdrop" aria-label="Fermer" (click)="closeSheet()"></button>
+      <div class="sheet-panel">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-head">
+          @if (f.imageUrl) {
+            <img [src]="f.imageUrl" [alt]="" class="sheet-thumb" />
+          }
+          <div class="min-w-0">
+            <p class="truncate font-display text-base font-bold tracking-tight">{{ f.name }}</p>
+            <p class="mt-0.5 text-xs text-ink-mute">{{ f.kcalPer100g }} kcal / 100 g</p>
+          </div>
+        </div>
+
+        <div class="sheet-q-row">
+          <p class="sheet-q">Combien ?</p>
+          <div class="unit-toggle" role="group" aria-label="Unité de saisie">
+            <button
+              type="button"
+              class="unit-opt"
+              [class.unit-opt-on]="qtyMode() === 'g'"
+              (click)="setQtyMode('g')"
+            >
+              g
+            </button>
+            <button
+              type="button"
+              class="unit-opt"
+              [class.unit-opt-on]="qtyMode() === 'unit'"
+              [disabled]="!canUseUnit()"
+              (click)="setQtyMode('unit')"
+            >
+              Unité
+            </button>
+          </div>
+        </div>
+
+        <p class="sheet-grams tabular-nums">
+          {{ gramsDraft() || '0' }}
+          <span class="sheet-g">{{ qtyMode() === 'g' ? 'g' : 'u' }}</span>
+        </p>
+        <p class="sheet-preview">
+          @if (qtyMode() === 'unit' && servingGrams(); as s) {
+            <span>{{ qtyValue() || 0 }} × {{ s }} g = {{ grams() }} g</span>
+            @if (previewKcal() != null) {
+              <span> · ≈ {{ previewKcal() }} kcal</span>
+            }
+          } @else if (previewKcal() != null) {
+            ≈ {{ previewKcal() }} kcal
+          } @else {
+            Saisis une portion
+          }
+        </p>
+
+        <div class="gram-presets">
+          @if (qtyMode() === 'unit') {
+            @for (u of unitPresets; track u) {
+              <button
+                type="button"
+                class="gram-preset"
+                [class.gram-preset-on]="qtyValue() === u"
+                (click)="setPreset(u)"
+              >
+                {{ u }}
+              </button>
+            }
+          } @else {
+            @for (g of gramPresets; track g) {
+              <button
+                type="button"
+                class="gram-preset"
+                [class.gram-preset-on]="qtyValue() === g"
+                (click)="setPreset(g)"
+              >
+                {{ g }} g
+              </button>
+            }
+          }
+        </div>
+
+        <div class="pad" role="group" aria-label="Pavé numérique">
+          @for (k of padKeys; track k) {
+            <button type="button" class="pad-key" [class.pad-key-meta]="k === 'C' || k === '⌫'" (click)="padTap(k)">
+              {{ k }}
+            </button>
+          }
+        </div>
+
+        <button type="button" class="cta" [disabled]="adding() || grams() < 1" (click)="add()">
+          {{ adding() ? 'Ajout…' : 'Ajouter au journal' }}
+        </button>
+      </div>
+    </div>
   }
 
-  <section>
-    <h2>Ajouter un aliment</h2>
-    <form class="grid" [formGroup]="form" (ngSubmit)="add()">
-      <label>
-        Moment
-        <select formControlName="mealSlot">
-          <option value="BREAKFAST">Petit-déjeuner</option>
-          <option value="LUNCH">Déjeuner</option>
-          <option value="DINNER">Dîner</option>
-          <option value="SNACK">Collation</option>
-        </select>
-      </label>
-      <label>
-        Aliment
-        <select formControlName="foodId">
-          @for (f of foods(); track f.id) {
-            <option [value]="f.id">{{ f.name }}</option>
-          }
-        </select>
-      </label>
-      <label>Grammes <input type="number" formControlName="grams" /></label>
-      <button type="submit">Ajouter</button>
-    </form>
-  </section>
-
-  <section>
-    <h2>Journal</h2>
-    <ul>
-      @for (e of diary()?.entries || []; track e.id) {
-        <li>
-          {{ e.mealSlot }} — {{ e.foodName }} {{ e.grams }}g ({{ e.kcal }} kcal)
-          <button type="button" class="ghost" (click)="remove(e.id)">Retirer</button>
-        </li>
-      } @empty {
-        <li class="muted">Rien pour aujourd’hui.</li>
-      }
-    </ul>
-  </section>
-
-  <section>
-    <h2>Retours coach</h2>
-    <ul>
-      @for (m of feedback(); track m.id) {
-        <li><strong>{{ m.authorName }}</strong> : {{ m.body }}</li>
-      } @empty {
-        <li class="muted">Pas encore de retour.</li>
-      }
-    </ul>
-    <form class="grid" [formGroup]="feedbackForm" (ngSubmit)="sendFeedback()">
-      <label>Message <input formControlName="body" /></label>
-      <button type="submit">Envoyer</button>
-    </form>
-  </section>
-</main>
+  @if (toast()) {
+    <div class="toast" role="status" aria-live="polite">{{ toast() }}</div>
+  }
+</div>

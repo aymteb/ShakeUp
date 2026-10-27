@@ -26,6 +26,9 @@ public class Exercise {
 	@Column(name = "demo_url")
 	private String demoUrl;
 
+	@Column(name = "external_id")
+	private Long externalId;
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private CatalogSource source;
@@ -62,6 +65,14 @@ public class Exercise {
 
 	public void setDemoUrl(String demoUrl) {
 		this.demoUrl = demoUrl;
+	}
+
+	public Long getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(Long externalId) {
+		this.externalId = externalId;
 	}
 
 	public CatalogSource getSource() {

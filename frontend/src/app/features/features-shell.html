@@ -1,39 +1,37 @@
-<div class="flex min-h-dvh bg-paper text-ink">
-  <aside
-    class="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-ash-line bg-paper-raised md:flex"
-  >
-    <div class="border-b border-ash-line px-5 py-5">
+<div class="features-root flex min-h-dvh gap-4 p-4 text-ink md:gap-5 md:p-5">
+  <aside class="su-shell sticky top-5 hidden h-[calc(100dvh-2.5rem)] w-60 shrink-0 flex-col self-start md:flex">
+    <div class="px-5 pt-5">
       <a routerLink="/" class="font-display text-lg font-extrabold tracking-tight text-ink">
         ShakeUp
       </a>
-      <p class="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-ink-mute">Produit</p>
+      <p class="mt-0.5 text-xs text-ink-mute">Découvrir</p>
     </div>
-    <nav class="flex flex-1 flex-col gap-0.5 overflow-y-auto px-3 py-4 text-sm" aria-label="Rubriques">
+    <nav class="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-5 text-sm" aria-label="Rubriques">
       @for (item of nav; track item.path) {
         <a
           [routerLink]="item.path"
-          routerLinkActive="bg-ink text-paper"
-          class="rounded-sm px-3 py-2.5 font-medium text-ink-mute transition hover:bg-ash/60 hover:text-ink"
+          routerLinkActive="su-nav-on"
+          class="su-nav"
         >
           {{ item.label }}
         </a>
       }
     </nav>
-    <div class="border-t border-ash-line px-5 py-4 text-sm">
-      <a routerLink="/login" class="font-medium text-ink underline-offset-2 hover:underline">
+    <div class="mx-3 mb-3 space-y-2 rounded-2xl bg-ash/70 px-4 py-3 text-sm">
+      <a routerLink="/login" class="block font-medium text-ink underline-offset-2 hover:underline">
         Connexion élève
       </a>
-      <a routerLink="/" class="mt-2 block text-ink-mute hover:text-ink">← Accueil</a>
+      <a routerLink="/" class="block text-ink-mute hover:text-ink">← Accueil</a>
     </div>
   </aside>
 
-  <div class="flex min-w-0 flex-1 flex-col">
+  <div class="su-shell flex min-w-0 flex-1 flex-col overflow-hidden">
     <header
-      class="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-ash-line bg-paper/90 px-4 py-3 backdrop-blur md:hidden"
+      class="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-ash-line/80 px-4 py-3 md:hidden"
     >
       <a routerLink="/" class="font-display text-base font-extrabold">ShakeUp</a>
       <select
-        class="max-w-[60%] border border-ash-line bg-paper-raised px-2 py-1.5 text-sm"
+        class="su-field max-w-[60%] py-1.5 text-sm"
         [value]="''"
         (change)="navSelect($event)"
       >
@@ -44,7 +42,7 @@
       </select>
     </header>
 
-    <main class="flex-1 px-5 py-10 sm:px-10 lg:px-14 lg:py-12">
+    <main class="flex-1 overflow-auto px-5 py-10 sm:px-10 lg:px-12 lg:py-12">
       <div class="mx-auto max-w-3xl">
         <router-outlet />
       </div>

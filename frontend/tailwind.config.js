@@ -5,21 +5,21 @@ module.exports = {
     extend: {
       colors: {
         ink: {
-          DEFAULT: '#0B0F0E',
-          soft: '#1A2220',
-          mute: '#3D4A46',
+          DEFAULT: '#111827',
+          soft: '#1F2937',
+          mute: '#6B7280',
         },
         paper: {
-          DEFAULT: '#F2F5F3',
+          DEFAULT: '#F4F5F7',
           raised: '#FFFFFF',
         },
         volt: {
           DEFAULT: '#B8F000',
-          dim: '#8FBC00',
+          dim: '#9ACC00',
         },
         ash: {
-          DEFAULT: '#E4EBE7',
-          line: '#C5D0CB',
+          DEFAULT: '#EEF0F3',
+          line: '#E8EAED',
         },
       },
       fontFamily: {
@@ -27,8 +27,12 @@ module.exports = {
         sans: ['Figtree', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        lift: '0 12px 40px rgba(11, 15, 14, 0.14)',
-        rail: '4px 0 24px rgba(11, 15, 14, 0.06)',
+        lift: '0 8px 30px rgba(17, 24, 39, 0.06)',
+        rail: '1px 0 0 rgba(229, 231, 235, 1)',
+      },
+      borderRadius: {
+        none: '0',
+        DEFAULT: '0',
       },
       keyframes: {
         rise: {

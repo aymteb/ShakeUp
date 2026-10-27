@@ -1,6 +1,7 @@
 package com.shakeup.backend.domain;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -43,6 +44,12 @@ public class UserAccount implements UserDetails {
 
 	@Column(name = "created_at", nullable = false)
 	private Instant createdAt = Instant.now();
+
+	@Column(name = "coaching_starts_on")
+	private LocalDate coachingStartsOn;
+
+	@Column(name = "coaching_ends_on")
+	private LocalDate coachingEndsOn;
 
 	public Long getId() {
 		return id;
@@ -90,6 +97,22 @@ public class UserAccount implements UserDetails {
 
 	public Instant getCreatedAt() {
 		return createdAt;
+	}
+
+	public LocalDate getCoachingStartsOn() {
+		return coachingStartsOn;
+	}
+
+	public void setCoachingStartsOn(LocalDate coachingStartsOn) {
+		this.coachingStartsOn = coachingStartsOn;
+	}
+
+	public LocalDate getCoachingEndsOn() {
+		return coachingEndsOn;
+	}
+
+	public void setCoachingEndsOn(LocalDate coachingEndsOn) {
+		this.coachingEndsOn = coachingEndsOn;
 	}
 
 	@Override

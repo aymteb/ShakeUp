@@ -32,12 +32,14 @@ public class PlanService {
 		this.exercises = exercises;
 	}
 
+	@Transactional(readOnly = true)
 	public PlanResponse getForEleve(Long eleveId) {
 		return plans.findFirstByEleveAndActiveTrueOrderByIdDesc(requireEleve(eleveId))
 				.map(PlanResponse::from)
 				.orElse(null);
 	}
 
+	@Transactional(readOnly = true)
 	public PlanResponse getMine(UserAccount eleve) {
 		return plans.findFirstByEleveAndActiveTrueOrderByIdDesc(eleve)
 				.map(PlanResponse::from)

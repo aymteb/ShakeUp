@@ -1,0 +1,80 @@
+<div class="map" role="group" aria-label="Écorché musculaire interactif">
+  <div class="side-toggle" role="tablist" aria-label="Face ou dos">
+    <button
+      type="button"
+      role="tab"
+      class="side-btn"
+      [class.side-btn-on]="side() === 'front'"
+      [attr.aria-selected]="side() === 'front'"
+      (click)="setSide('front')"
+    >
+      Face
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="side-btn"
+      [class.side-btn-on]="side() === 'back'"
+      [attr.aria-selected]="side() === 'back'"
+      (click)="setSide('back')"
+    >
+      Dos
+    </button>
+  </div>
+
+  <div class="frame">
+    <svg
+      class="figure"
+      [attr.viewBox]="viewBox()"
+      role="img"
+      aria-label="Silhouette anatomique — clique un muscle pour filtrer"
+    >
+      <title>Écorché ShakeUp</title>
+
+      <path class="outline" [attr.d]="outline()" />
+
+      @for (part of parts(); track part.slug) {
+        @for (d of part.paths; track $index) {
+          <path
+            [attr.d]="d"
+            class="zone"
+            [class.zone-deco]="!isInteractive(part)"
+            [class.zone-on]="isOn(part)"
+            [attr.data-slug]="part.slug"
+            [attr.title]="muscleFor(part.slug) ?? null"
+            (click)="pickPart(part)"
+          />
+        }
+      }
+    </svg>
+  </div>
+
+  <button
+    type="button"
+    class="cardio"
+    [class.cardio-on]="selected() === 'Cardio'"
+    (click)="pickCardio()"
+  >
+    Cardio
+  </button>
+
+  <p class="hint">
+    @if (selected(); as g) {
+      <span class="hint-on">{{ g }}</span>
+      <button type="button" class="hint-clear" (click)="clear()">Tout voir</button>
+    } @else {
+      Clique une zone
+    }
+  </p>
+
+  <p class="credit">
+    Silhouette adaptée de
+    <a
+      href="https://github.com/HichamELBSI/react-native-body-highlighter"
+      target="_blank"
+      rel="noopener noreferrer"
+      >body-highlighter</a
+    >
+    (MIT)
+  </p>
+</div>

@@ -1,0 +1,80 @@
+<div class="px-5 py-7 md:px-8">
+  <div class="mb-7 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">Élèves</h1>
+      <p class="mt-1 text-sm text-ink-mute">Comptes suivis depuis ce back-office.</p>
+    </div>
+    <button type="button" class="su-btn-primary" (click)="openCreate()">Nouvel élève</button>
+  </div>
+
+  @if (error()) {
+    <p class="mb-4 text-sm text-red-700" role="alert">{{ error() }}</p>
+  }
+
+  @if (showCreate()) {
+    <section
+      class="su-panel mb-8 p-5"
+      aria-label="Créer un élève"
+    >
+      <h2 class="font-display text-lg font-bold">Nouvel élève</h2>
+      <form class="mt-4 grid gap-4 sm:grid-cols-3" [formGroup]="form" (ngSubmit)="create()">
+        <label class="block space-y-1 text-sm">
+          <span class="font-medium">Nom affiché</span>
+          <input formControlName="displayName" class="su-field" />
+        </label>
+        <label class="block space-y-1 text-sm">
+          <span class="font-medium">Email</span>
+          <input type="email" formControlName="email" class="su-field" />
+        </label>
+        <label class="block space-y-1 text-sm">
+          <span class="font-medium">Mot de passe temporaire</span>
+          <input type="text" formControlName="temporaryPassword" class="su-field" />
+        </label>
+        <div class="flex gap-3 sm:col-span-3">
+          <button type="submit" class="su-btn-primary">Créer</button>
+          <button type="button" class="su-btn-ghost" (click)="closeCreate()">Annuler</button>
+        </div>
+      </form>
+    </section>
+  }
+
+  @if (loading()) {
+    <p class="text-ink-mute">Chargement…</p>
+  } @else if (eleves().length === 0) {
+    <div class="su-panel border-dashed px-6 py-16">
+      <p class="font-display text-xl font-bold">Aucun élève</p>
+      <p class="mt-2 max-w-md text-ink-mute">
+        Crée un compte ou relance l’API pour charger le seed Camille Demo.
+      </p>
+    </div>
+  } @else {
+    <ul class="su-panel divide-y divide-ash-line">
+      @for (e of eleves(); track e.id) {
+        <li>
+          <a
+            [routerLink]="['/eleves', e.id]"
+            class="flex flex-col gap-2 px-5 py-4 transition hover:bg-ash/60 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div>
+              <p class="font-display text-lg font-bold text-ink">{{ e.displayName }}</p>
+              <p class="text-sm text-ink-mute">{{ e.email }}</p>
+            </div>
+            <div class="flex items-center gap-4">
+              <span class="su-tag" [class.opacity-60]="!e.coachingActive">
+                {{ e.coachingActive ? 'Actif' : 'Terminé' }}
+              </span>
+              <span class="text-xs font-medium text-ink-mute">Ouvrir →</span>
+              <button
+                type="button"
+                class="text-sm text-red-700/80 hover:text-red-800"
+                (click)="remove(e, $event)"
+              >
+                Supprimer
+              </button>
+            </div>
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</div>

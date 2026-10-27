@@ -1,0 +1,469 @@
+<div class="px-5 py-8 md:px-8">
+  <a routerLink="/eleves" class="text-sm text-ink-mute transition hover:text-ink">← Élèves</a>
+
+  @if (eleve(); as e) {
+    <header class="mt-4 flex flex-wrap items-start justify-between gap-4 border-b border-ash-line pb-6">
+      <div>
+        <h1 class="font-display text-3xl font-bold tracking-tight text-ink">{{ e.displayName }}</h1>
+        <p class="mt-1 text-ink-mute">{{ e.email }}</p>
+        <p class="mt-2 text-sm text-ink-mute">
+          Coaching :
+          <span [class.text-emerald-700]="e.coachingActive" [class.text-red-700]="!e.coachingActive">
+            {{ e.coachingActive ? 'actif' : 'terminé' }}
+          </span>
+          @if (e.coachingStartsOn || e.coachingEndsOn) {
+            <span class="text-ink-mute">
+              ({{ e.coachingStartsOn || '…' }} → {{ e.coachingEndsOn || '…' }})
+            </span>
+          }
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button type="button" class="su-btn-ghost px-3 py-2" (click)="startEditProfile()">
+          Modifier le profil
+        </button>
+        <button
+          type="button"
+          class="border border-red-200 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
+          (click)="removeEleve()"
+        >
+          Supprimer
+        </button>
+      </div>
+    </header>
+  }
+
+  @if (error()) {
+    <p class="mt-4 text-sm text-red-700" role="alert">{{ error() }}</p>
+  }
+  @if (ok()) {
+    <p class="mt-4 text-sm text-emerald-700" role="status">{{ ok() }}</p>
+  }
+
+  @if (currentWeek(); as week) {
+    <section class="mt-6 border border-ash-line bg-paper-raised p-5">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 class="font-display text-lg font-bold">Semaine en cours</h2>
+          <p class="mt-1 text-sm text-ink-mute">
+            ISO {{ week.isoYear }} · S{{ week.isoWeek }} — accès ouvert dans les
+            deux cas ; la coupure évite un faux signal « élève fantôme ».
+          </p>
+        </div>
+        <span class="su-tag">{{ week.kind === 'COUPURE' ? 'Coupure' : 'Pleine' }}</span>
+      </div>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button
+          type="button"
+          class="su-btn-primary py-2"
+          (click)="setWeekKind('FULL')"
+        >
+          Semaine pleine
+        </button>
+        <button
+          type="button"
+          class="su-btn-ghost py-2"
+          (click)="setWeekKind('COUPURE')"
+        >
+          Semaine de coupure
+        </button>
+      </div>
+      <label class="mt-4 block max-w-xl space-y-1 text-sm">
+        <span class="font-medium">Note (optionnel)</span>
+        <input
+          class="w-full border border-ash-line px-3 py-2 focus:border-ink focus:outline-none"
+          [value]="weekNote()"
+          (input)="weekNote.set($any($event.target).value)"
+          placeholder="Vacances, blessure…"
+        />
+      </label>
+    </section>
+  }
+
+  @if (editingProfile()) {
+    <section class="mt-6 border border-ash-line bg-paper-raised p-5">
+      <h2 class="font-display text-lg font-bold">Profil</h2>
+      <form class="mt-4 grid max-w-xl gap-3" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+        <label class="block space-y-1 text-sm">
+          <span class="font-medium">Nom</span>
+          <input
+            formControlName="displayName"
+            class="w-full border border-ash-line px-3 py-2 focus:border-ink focus:outline-none"
+          />
+        </label>
+        <label class="block space-y-1 text-sm">
+          <span class="font-medium">Nouveau mot de passe (optionnel)</span>
+          <input
+            formControlName="temporaryPassword"
+            class="w-full border border-ash-line px-3 py-2 focus:border-ink focus:outline-none"
+          />
+        </label>
+        <label class="block space-y-1 text-sm">
+          <span class="font-medium">Début coaching</span>
+          <input
+            type="date"
+            formControlName="coachingStartsOn"
+            class="w-full border border-ash-line px-3 py-2 focus:border-ink focus:outline-none"
+          />
+        </label>
+        <label class="block space-y-1 text-sm">
+          <span class="font-medium">Fin coaching (coupure à 00:00 ce jour-là)</span>
+          <input
+            type="date"
+            formControlName="coachingEndsOn"
+            class="w-full border border-ash-line px-3 py-2 focus:border-ink focus:outline-none"
+          />
+        </label>
+        <p class="text-xs text-ink-mute">
+          Pour réactiver un élève bloqué, mets une date de fin dans le futur.
+        </p>
+        <div class="flex gap-3">
+          <button type="submit" class="su-btn-primary py-2">Enregistrer</button>
+          <button type="button" class="text-sm text-ink-mute" (click)="cancelEditProfile()">
+            Annuler
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+
+  <!-- Programme -->
+  <section class="mt-10">
+    <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <h2 class="font-display text-xl font-bold tracking-tight">Programme muscu</h2>
+        <p class="text-sm text-ink-mute">Ce que l’élève voit en salle.</p>
+      </div>
+      @if (!editingPlan()) {
+        <button type="button" class="su-btn-primary py-2" (click)="startEditPlan()">
+          {{ plan() ? 'Modifier' : 'Créer un programme' }}
+        </button>
+      }
+    </div>
+
+    @if (!editingPlan()) {
+      @if (plan(); as p) {
+        <div class="border border-ash-line bg-paper-raised p-5">
+          <p class="font-display text-lg font-bold">{{ p.title }}</p>
+          @if (p.notes) {
+            <p class="mt-1 text-sm text-ink-mute">{{ p.notes }}</p>
+          }
+          <ul class="mt-5 divide-y divide-ash-line">
+            @for (item of p.items; track item.id ?? $index) {
+              <li class="flex flex-col gap-0.5 py-3 sm:flex-row sm:items-baseline sm:justify-between">
+                <div>
+                  <p class="font-medium text-ink">{{ item.exerciseName }}</p>
+                  <p class="text-xs text-ink-mute">{{ item.muscleGroup }}</p>
+                </div>
+                <p class="text-sm text-ink-mute sm:text-right">{{ formatItem(item) }}</p>
+              </li>
+            }
+          </ul>
+        </div>
+      } @else {
+        <div class="border border-dashed border-ash-line px-5 py-10 text-ink-mute">
+          Aucun programme assigné.
+        </div>
+      }
+    } @else {
+      <div class="space-y-5 border border-ash-line bg-paper-raised p-5">
+        <label class="block max-w-md space-y-1 text-sm">
+          <span class="font-medium">Titre</span>
+          <input
+            class="w-full border border-ash-line px-3 py-2 focus:border-ink focus:outline-none"
+            [value]="draftTitle()"
+            (input)="draftTitle.set($any($event.target).value)"
+          />
+        </label>
+        <label class="block max-w-xl space-y-1 text-sm">
+          <span class="font-medium">Notes</span>
+          <input
+            class="w-full border border-ash-line px-3 py-2 focus:border-ink focus:outline-none"
+            [value]="draftNotes()"
+            (input)="draftNotes.set($any($event.target).value)"
+          />
+        </label>
+
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <p class="text-xs text-ink-mute">
+            Raccourci
+            <kbd class="mx-0.5 border border-ash-line bg-paper px-1.5 py-0.5 font-sans text-[10px] font-semibold"
+              >/</kbd
+            >
+            pour ajouter sans souris
+          </p>
+          <button
+            type="button"
+            class="su-btn-primary py-2"
+            (click)="openPicker()"
+          >
+            Parcourir le catalogue
+          </button>
+        </div>
+
+        <ul class="divide-y divide-ash-line border border-ash-line">
+          @for (item of draftItems(); track $index) {
+            <li class="space-y-3 px-3 py-3">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p class="font-medium">{{ item.exerciseName }}</p>
+                  <p class="text-xs text-ink-mute">{{ item.muscleGroup }}</p>
+                </div>
+                <button
+                  type="button"
+                  class="text-sm text-ink-mute hover:text-red-700"
+                  (click)="removeDraftItem($index)"
+                >
+                  Retirer
+                </button>
+              </div>
+              <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <label class="block space-y-1 text-xs">
+                  <span class="font-medium text-ink-mute">Séries</span>
+                  <input
+                    type="number"
+                    min="1"
+                    class="w-full border border-ash-line px-2 py-1.5 text-sm"
+                    [value]="item.setsTarget"
+                    (input)="updateDraftItem($index, { setsTarget: num($any($event.target).value, 1) })"
+                  />
+                </label>
+                @if (item.exerciseKind === 'HOLD') {
+                  <label class="block space-y-1 text-xs">
+                    <span class="font-medium text-ink-mute">Durée (s)</span>
+                    <input
+                      type="number"
+                      min="1"
+                      class="w-full border border-ash-line px-2 py-1.5 text-sm"
+                      [value]="item.durationSeconds ?? ''"
+                      (input)="updateDraftItem($index, { durationSeconds: numOrNull($any($event.target).value) })"
+                    />
+                  </label>
+                } @else {
+                  <label class="block space-y-1 text-xs">
+                    <span class="font-medium text-ink-mute">Reps</span>
+                    <input
+                      type="number"
+                      min="1"
+                      class="w-full border border-ash-line px-2 py-1.5 text-sm"
+                      [value]="item.repsTarget ?? ''"
+                      (input)="updateDraftItem($index, { repsTarget: numOrNull($any($event.target).value) })"
+                    />
+                  </label>
+                  <label class="block space-y-1 text-xs">
+                    <span class="font-medium text-ink-mute">Poids (kg)</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.5"
+                      class="w-full border border-ash-line px-2 py-1.5 text-sm"
+                      [value]="item.weightKg ?? ''"
+                      (input)="updateDraftItem($index, { weightKg: numOrNull($any($event.target).value) })"
+                    />
+                  </label>
+                }
+                <label class="block space-y-1 text-xs">
+                  <span class="font-medium text-ink-mute">Repos (s)</span>
+                  <input
+                    type="number"
+                    min="0"
+                    class="w-full border border-ash-line px-2 py-1.5 text-sm"
+                    [value]="item.restSeconds"
+                    (input)="updateDraftItem($index, { restSeconds: num($any($event.target).value) })"
+                  />
+                </label>
+              </div>
+            </li>
+          } @empty {
+            <li class="px-3 py-4 text-sm text-ink-mute">
+              Aucun exercice — ouvre le catalogue ou tape
+              <kbd class="border border-ash-line bg-paper px-1 font-sans text-[10px]">/</kbd>.
+            </li>
+          }
+        </ul>
+
+        <form
+          class="grid gap-3 border border-dashed border-ash-line p-4 sm:grid-cols-2 lg:grid-cols-4"
+          [formGroup]="addItemForm"
+          (ngSubmit)="addDraftItem()"
+        >
+          <div class="sm:col-span-2 lg:col-span-4">
+            <p class="text-sm font-medium">Presets pour le prochain ajout</p>
+            @if (selectedExercise(); as ex) {
+              <p class="mt-1 text-xs text-ink-mute">
+                Dernier choisi :
+                <span class="font-medium text-ink">{{ ex.name }}</span>
+                ({{ ex.muscleGroup }})
+              </p>
+            }
+          </div>
+          <label class="block space-y-1 text-sm">
+            <span class="font-medium">Séries</span>
+            <input
+              type="number"
+              formControlName="setsTarget"
+              min="1"
+              class="w-full border border-ash-line px-3 py-2"
+            />
+          </label>
+          @if (selectedKind() === 'LOAD') {
+            <label class="block space-y-1 text-sm">
+              <span class="font-medium">Reps</span>
+              <input
+                type="number"
+                formControlName="repsTarget"
+                min="1"
+                class="w-full border border-ash-line px-3 py-2"
+              />
+            </label>
+            <label class="block space-y-1 text-sm">
+              <span class="font-medium">Poids (kg)</span>
+              <input
+                type="number"
+                formControlName="weightKg"
+                min="0"
+                step="0.5"
+                class="w-full border border-ash-line px-3 py-2"
+              />
+            </label>
+          } @else {
+            <label class="block space-y-1 text-sm sm:col-span-2">
+              <span class="font-medium">Durée (s)</span>
+              <input
+                type="number"
+                formControlName="durationSeconds"
+                min="1"
+                class="w-full border border-ash-line px-3 py-2"
+              />
+            </label>
+          }
+          <label class="block space-y-1 text-sm">
+            <span class="font-medium">Repos (s)</span>
+            <input
+              type="number"
+              formControlName="restSeconds"
+              min="0"
+              class="w-full border border-ash-line px-3 py-2"
+            />
+          </label>
+          <div class="flex flex-wrap items-end gap-2 sm:col-span-2 lg:col-span-4">
+            <button
+              type="button"
+              class="border border-ink px-4 py-2 text-sm font-medium text-ink hover:bg-ink hover:text-paper"
+              (click)="openPicker()"
+            >
+              Choisir l’exercice…
+            </button>
+            <button
+              type="submit"
+              class="bg-volt px-4 py-2 text-sm font-bold text-ink hover:bg-white"
+              [disabled]="!selectedExercise()"
+            >
+              Ajouter le dernier choisi
+            </button>
+          </div>
+        </form>
+
+        <app-exercise-picker
+          [open]="pickerOpen()"
+          [exercises]="exercises()"
+          (closed)="pickerOpen.set(false)"
+          (picked)="onExercisePicked($event)"
+        />
+        <app-slash-menu
+          [open]="slashOpen()"
+          [exercises]="exercises()"
+          (closed)="slashOpen.set(false)"
+          (picked)="onExercisePicked($event)"
+        />
+
+        <div class="flex gap-3">
+          <button
+            type="button"
+            class="bg-volt px-4 py-2.5 font-display text-sm font-bold text-ink"
+            (click)="savePlan()"
+          >
+            Enregistrer le programme
+          </button>
+          <button type="button" class="text-sm text-ink-mute" (click)="cancelEditPlan()">
+            Annuler
+          </button>
+        </div>
+      </div>
+    }
+  </section>
+
+  <!-- Nutrition -->
+  <section class="mt-12">
+    <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <h2 class="font-display text-xl font-bold tracking-tight">Consignes nutrition</h2>
+        <p class="text-sm text-ink-mute">Objectifs du jour pour l’élève.</p>
+      </div>
+      @if (!editingTarget()) {
+        <button
+          type="button"
+          class="su-btn-primary py-2"
+          (click)="startEditTarget()"
+        >
+          {{ target() ? 'Modifier' : 'Définir' }}
+        </button>
+      }
+    </div>
+
+    @if (!editingTarget()) {
+      @if (target(); as t) {
+        <div class="border border-ash-line bg-paper-raised p-5">
+          <p class="font-display text-3xl font-bold tracking-tight">{{ t.caloriesKcal }} kcal</p>
+          <p class="mt-2 text-ink-mute">
+            P {{ t.proteinG ?? '—' }} g · G {{ t.carbsG ?? '—' }} g · L {{ t.fatG ?? '—' }} g
+          </p>
+          @if (t.coachNote) {
+            <p class="mt-4 border-t border-ash-line pt-4 text-sm text-ink-mute">
+              <span class="font-medium text-ink">Note —</span> {{ t.coachNote }}
+            </p>
+          }
+        </div>
+      } @else {
+        <div class="border border-dashed border-ash-line px-5 py-10 text-ink-mute">
+          Aucune consigne pour l’instant.
+        </div>
+      }
+    } @else {
+      <form
+        class="grid max-w-2xl gap-3 border border-ash-line bg-paper-raised p-5 sm:grid-cols-2"
+        [formGroup]="targetForm"
+        (ngSubmit)="saveTarget()"
+      >
+        <label class="block space-y-1 text-sm">
+          <span class="font-medium">Calories</span>
+          <input type="number" formControlName="caloriesKcal" class="w-full border border-ash-line px-3 py-2" />
+        </label>
+        <label class="block space-y-1 text-sm">
+          <span class="font-medium">Protéines (g)</span>
+          <input type="number" formControlName="proteinG" class="w-full border border-ash-line px-3 py-2" />
+        </label>
+        <label class="block space-y-1 text-sm">
+          <span class="font-medium">Glucides (g)</span>
+          <input type="number" formControlName="carbsG" class="w-full border border-ash-line px-3 py-2" />
+        </label>
+        <label class="block space-y-1 text-sm">
+          <span class="font-medium">Lipides (g)</span>
+          <input type="number" formControlName="fatG" class="w-full border border-ash-line px-3 py-2" />
+        </label>
+        <label class="block space-y-1 text-sm sm:col-span-2">
+          <span class="font-medium">Note coach</span>
+          <input formControlName="coachNote" class="w-full border border-ash-line px-3 py-2" />
+        </label>
+        <div class="flex gap-3 sm:col-span-2">
+          <button type="submit" class="bg-volt px-4 py-2.5 font-display text-sm font-bold text-ink">
+            Enregistrer
+          </button>
+          <button type="button" class="text-sm text-ink-mute" (click)="cancelEditTarget()">
+            Annuler
+          </button>
+        </div>
+      </form>
+    }
+  </section>
+</div>

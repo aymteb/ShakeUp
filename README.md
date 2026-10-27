@@ -80,13 +80,15 @@ cd backoffice
 npm start
 ```
 
-http://localhost:4300 — login coach et bureau de suivi.
+http://localhost:4300 — login coach, liste élèves, fiche (programme + consignes), catalogues exercices.
+
+Sur la fiche élève (édition programme) : catalogue avec **écorché SVG interactif** (face/dos), aperçu média Wger au survol, et raccourci **`/`** type Notion pour ajouter un exercice au clavier.
 
 ---
 
 ## Tester l’application
 
-Un **jeu de données de démonstration (seed)** est chargé au démarrage de l’API — pratique portfolio pour tester les rôles sans inscription.
+Un **jeu de données de démonstration** est chargé au démarrage de l’API — pratique portfolio pour tester les rôles sans inscription.
 
 | Rôle | Email | Mot de passe | Où se connecter |
 |------|-------|--------------|-----------------|
@@ -95,13 +97,17 @@ Un **jeu de données de démonstration (seed)** est chargé au démarrage de l�
 
 Raccourci coach prérempli : http://localhost:4300/login?demo=1
 
-Données seed liées à l’élève démo : programme **Séance A** (squat, développé, gainage) + consignes nutrition (2450 kcal).
+**Catalogues** : exercices via [Wger](https://wger.de/en/software/api) (`POST /api/v1/coach/exercises/sync-wger`) ; aliments via [Open Food Facts](https://world.openfoodfacts.org/data) (`POST /api/v1/coach/foods/sync-off`, recherche élève `GET /api/v1/eleve/foods?q=`). Sync auto au premier démarrage si catalogue vide.
+
+**PWA élève** : séance live (séries, chrono repos) + journal nutrition (jauges, recherche OFF, **scan / saisie code-barres** → `GET /api/v1/eleve/foods/barcode/{code}`).
+
+Données démo liées à l’élève : programme **Séance A** (squat, développé, gainage) + consignes nutrition (2450 kcal).
 
 Parcours suggéré pour un recruteur (≈ 3 minutes) :
 
 1. Landing + glossaire `/features` (`:4200`)  
-2. Back-office coach → voir l’élève **Camille Demo** (`:4300`)  
-3. Déconnexion → login élève → programme + consignes sur le shell mobile (`:4200/login`)
+2. Back-office coach → **Catalogues** (sync Wger) puis **Camille Demo** → fiche programme / nutrition (`:4300`)  
+3. Déconnexion → login élève → même données côté PWA (`:4200/login`)
 
 ---
 

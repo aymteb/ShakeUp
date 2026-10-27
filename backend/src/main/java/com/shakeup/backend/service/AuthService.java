@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.shakeup.backend.domain.Role;
 import com.shakeup.backend.domain.UserAccount;
 import com.shakeup.backend.repository.UserAccountRepository;
 import com.shakeup.backend.security.JwtService;
@@ -22,28 +23,35 @@ public class AuthService {
 	private final JwtService jwtService;
 	private final UserAccountRepository users;
 	private final PasswordEncoder passwordEncoder;
+	private final CoachingAccessService coachingAccess;
 
 	public AuthService(
 			AuthenticationManager authenticationManager,
 			JwtService jwtService,
 			UserAccountRepository users,
-			PasswordEncoder passwordEncoder) {
+			PasswordEncoder passwordEncoder,
+			CoachingAccessService coachingAccess) {
 		this.authenticationManager = authenticationManager;
 		this.jwtService = jwtService;
 		this.users = users;
 		this.passwordEncoder = passwordEncoder;
+		this.coachingAccess = coachingAccess;
 	}
 
 	public LoginResponse login(LoginRequest request) {
 		Authentication auth = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 		UserAccount user = (UserAccount) auth.getPrincipal();
+		boolean active = user.getRole() != Role.ELEVE || coachingAccess.isCoachingActive(user);
 		return new LoginResponse(
 				jwtService.createToken(user),
 				user.getRole().name(),
 				user.getId(),
 				user.getDisplayName(),
-				user.isMustChangePassword());
+				user.isMustChangePassword(),
+				active,
+				user.getCoachingStartsOn(),
+				user.getCoachingEndsOn());
 	}
 
 	public void changePassword(UserAccount user, ChangePasswordRequest request) {

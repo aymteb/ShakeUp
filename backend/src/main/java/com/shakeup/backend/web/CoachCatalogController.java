@@ -13,10 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.shakeup.backend.service.CatalogService;
+import com.shakeup.backend.service.OffSyncService;
+import com.shakeup.backend.service.WgerSyncService;
 import com.shakeup.backend.web.dto.CreateExerciseRequest;
 import com.shakeup.backend.web.dto.CreateFoodRequest;
 import com.shakeup.backend.web.dto.ExerciseResponse;
 import com.shakeup.backend.web.dto.FoodResponse;
+import com.shakeup.backend.web.dto.OffSyncResult;
+import com.shakeup.backend.web.dto.WgerSyncResult;
 
 import jakarta.validation.Valid;
 
@@ -26,9 +30,16 @@ import jakarta.validation.Valid;
 public class CoachCatalogController {
 
 	private final CatalogService catalogService;
+	private final WgerSyncService wgerSyncService;
+	private final OffSyncService offSyncService;
 
-	public CoachCatalogController(CatalogService catalogService) {
+	public CoachCatalogController(
+			CatalogService catalogService,
+			WgerSyncService wgerSyncService,
+			OffSyncService offSyncService) {
 		this.catalogService = catalogService;
+		this.wgerSyncService = wgerSyncService;
+		this.offSyncService = offSyncService;
 	}
 
 	@GetMapping("/exercises")
@@ -39,6 +50,11 @@ public class CoachCatalogController {
 	@PostMapping("/exercises")
 	public ExerciseResponse createExercise(@Valid @RequestBody CreateExerciseRequest request) {
 		return catalogService.createExercise(request);
+	}
+
+	@PostMapping("/exercises/sync-wger")
+	public WgerSyncResult syncWger() {
+		return wgerSyncService.syncAll();
 	}
 
 	@PatchMapping("/exercises/{id}/hidden")
@@ -54,5 +70,10 @@ public class CoachCatalogController {
 	@PostMapping("/foods")
 	public FoodResponse createFood(@Valid @RequestBody CreateFoodRequest request) {
 		return catalogService.createFood(request);
+	}
+
+	@PostMapping("/foods/sync-off")
+	public OffSyncResult syncOff() {
+		return offSyncService.syncSeedQueries();
 	}
 }

@@ -1,0 +1,46 @@
+<div class="flex min-h-dvh gap-4 p-4 md:gap-5 md:p-5">
+  <aside class="su-shell hidden w-60 shrink-0 flex-col md:flex">
+    <div class="px-5 pt-5">
+      <p class="font-display text-lg font-extrabold tracking-tight text-ink">ShakeUp</p>
+      <p class="mt-0.5 text-xs text-ink-mute">Coach</p>
+    </div>
+    <nav class="flex flex-1 flex-col gap-1 px-3 py-5 text-sm">
+      <a
+        routerLink="/eleves"
+        routerLinkActive="su-nav-on"
+        [routerLinkActiveOptions]="{ exact: false }"
+        class="su-nav"
+      >
+        Élèves
+      </a>
+      <a
+        routerLink="/catalogues"
+        routerLinkActive="su-nav-on"
+        [routerLinkActiveOptions]="{ exact: false }"
+        class="su-nav"
+      >
+        Catalogues
+      </a>
+    </nav>
+    <div class="mx-3 mb-3 rounded-2xl bg-ash/70 px-4 py-3">
+      <p class="truncate text-sm font-medium text-ink">{{ auth.session()?.displayName }}</p>
+      <button
+        type="button"
+        class="mt-1 text-sm text-ink-mute transition hover:text-ink"
+        (click)="auth.logout()"
+      >
+        Déconnexion
+      </button>
+    </div>
+  </aside>
+
+  <div class="su-shell flex min-w-0 flex-1 flex-col overflow-hidden">
+    <header class="flex items-center justify-between border-b border-ash-line/80 px-5 py-3 md:hidden">
+      <p class="font-display text-lg font-bold">ShakeUp</p>
+      <button type="button" class="text-sm text-ink-mute" (click)="auth.logout()">Quitter</button>
+    </header>
+    <div class="flex-1 overflow-auto">
+      <router-outlet />
+    </div>
+  </div>
+</div>

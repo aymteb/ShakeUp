@@ -1,0 +1,24 @@
+:host {
+  display: contents;
+}
+
+.picker-backdrop {
+  background: rgba(11, 15, 14, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.ex-row:hover {
+  background: rgba(228, 235, 231, 0.55);
+}
+
+.ex-row-active {
+  background: color-mix(in srgb, var(--volt) 28%, white);
+}
+
+.media-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--volt-dim);
+}

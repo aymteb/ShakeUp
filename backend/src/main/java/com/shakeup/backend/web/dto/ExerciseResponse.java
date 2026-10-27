@@ -1,5 +1,6 @@
 package com.shakeup.backend.web.dto;
 
+import com.shakeup.backend.domain.CatalogSource;
 import com.shakeup.backend.domain.Exercise;
 import com.shakeup.backend.domain.ExerciseKind;
 
@@ -9,6 +10,8 @@ public record ExerciseResponse(
 		String muscleGroup,
 		String demoUrl,
 		ExerciseKind kind,
+		CatalogSource source,
+		Long externalId,
 		boolean hidden) {
 
 	public static ExerciseResponse from(Exercise e) {
@@ -18,6 +21,8 @@ public record ExerciseResponse(
 				e.getMuscleGroup(),
 				e.getDemoUrl(),
 				e.getKind(),
+				e.getSource(),
+				e.getExternalId(),
 				e.isHidden());
 	}
 }

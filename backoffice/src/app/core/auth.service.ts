@@ -11,6 +11,9 @@ export interface LoginResponse {
   userId: number;
   displayName: string;
   mustChangePassword: boolean;
+  coachingActive?: boolean;
+  coachingStartsOn?: string | null;
+  coachingEndsOn?: string | null;
 }
 
 const STORAGE_KEY = 'shakeup.auth.coach';

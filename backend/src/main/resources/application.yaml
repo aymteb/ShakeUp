@@ -21,3 +21,11 @@ shakeup:
   jwt:
     secret: shakeup-dev-secret-change-me-32chars-min
     expiration-minutes: 720
+  wger:
+    base-url: https://wger.de/api/v2
+    page-size: 50
+    sync-on-startup-if-empty: true
+  off:
+    base-url: https://world.openfoodfacts.org
+    page-size: 20
+    sync-on-startup-if-empty: true
